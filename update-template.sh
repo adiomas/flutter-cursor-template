@@ -22,7 +22,15 @@ fi
 
 # Clone latest template
 echo "📥 Downloading latest template..."
-git clone https://github.com/adiomas/flutter-cursor-template.git .cursor-tmp
+# Use --depth 1 for faster clone, no cache
+git clone --depth 1 --no-single-branch https://github.com/adiomas/flutter-cursor-template.git .cursor-tmp 2>&1 | grep -v "Cloning into" || true
+
+# Show which version we're updating to
+cd .cursor-tmp
+LATEST_COMMIT=$(git log -1 --format="%h - %s (%cr)" 2>/dev/null || echo "unknown")
+echo "📌 Latest version: $LATEST_COMMIT"
+cd ..
+echo ""
 
 # Update files
 echo "📝 Updating template files..."
@@ -72,6 +80,11 @@ rm -rf .cursor-tmp
 echo ""
 echo "✅ Template updated successfully!"
 echo "📋 Your project_context.md was preserved."
+echo ""
+echo "🔍 Verify update:"
+echo "   • Check .cursor/tools/ for latest scripts"
+echo "   • Check docs/ for latest documentation"
+echo "   • If files seem outdated, wait 2-3 minutes and try again (GitHub CDN delay)"
 echo ""
 echo "Next: Open Cursor and start building!"
 
