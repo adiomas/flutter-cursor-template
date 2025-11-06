@@ -2,6 +2,18 @@
 
 Common issues and solutions in Flutter development.
 
+## Bug Investigation Protocol
+
+For systematic debugging approaches, see the [Bug Investigation & Fixing Protocol](../../.cursor/rules/ui_ux_excellence.md#bug-investigation--fixing-protocol) in the UI/UX Excellence rules. This includes:
+
+- **Phase 1:** Understanding the error (read full error message, identify type, locate source)
+- **Phase 2:** Analyzing complete flow (read error-causing file, trace data flow, check related files)
+- **Phase 3:** Research if needed (search documentation, similar issues)
+- **Phase 4:** Finding root cause (logic error, null check, async timing, state initialization)
+- **Phase 5:** Fixing carefully (minimal changes, verify no side effects, add safeguards)
+
+The protocol emphasizes reading complete files, tracing data flow through all layers (repository → notifier → page/widget), and documenting root causes with prevention measures.
+
 ## Build Issues
 
 ### Pod Install Fails (iOS)
@@ -109,6 +121,8 @@ Use `Expanded` or `Flexible` widgets
 
 ### "setState() called after dispose()"
 Check if `mounted` before calling setState
+
+> **Systematic Bug Fixing:** For comprehensive bug investigation workflows, root cause analysis techniques, and bug fix examples, see the [Bug Investigation & Fixing Protocol](../../.cursor/rules/ui_ux_excellence.md#bug-investigation--fixing-protocol) in the UI/UX Excellence rules. Also see [File Organization & Clean Structure](../../.cursor/rules/ui_ux_excellence.md#file-organization--clean-structure) for preventing issues through proper file organization.
 
 ---
 

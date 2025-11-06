@@ -2,6 +2,8 @@
 
 Comprehensive design system for consistent, beautiful UI - colors, typography, spacing, and more.
 
+> **AI Design Enforcement:** For pixel-perfect implementation standards, design replication protocols, and design token system patterns, see [`.cursor/rules/ui_ux_excellence.md`](../../.cursor/rules/ui_ux_excellence.md). AI enforces design system consistency and automatically maps design references to design tokens.
+
 ## Color System
 
 ### Theme Colors
@@ -336,6 +338,8 @@ ElevatedButton(
 2. Don't skip semantic colors
 3. Don't forget contrast ratios
 4. Don't ignore touch targets
+
+> **Complete Design Guidelines:** For comprehensive UI/UX implementation workflows, design replication protocols, and master quality checklists, see [`.cursor/rules/ui_ux_excellence.md`](../../.cursor/rules/ui_ux_excellence.md). This includes advanced design patterns, responsive design strategies, and accessibility best practices.
 
 ## Next Steps
 

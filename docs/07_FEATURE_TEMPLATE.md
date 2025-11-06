@@ -15,6 +15,8 @@ This template provides a step-by-step guide to implement any CRUD feature in ~30
 - Loading states
 - User-friendly UI
 
+> **UI Implementation Standards:** For design system compliance, component extraction during feature development, and UI/UX implementation workflows, see [`.cursor/rules/ui_ux_excellence.md`](../../.cursor/rules/ui_ux_excellence.md). AI automatically follows design replication protocols and extracts reusable components.
+
 ## Prerequisites Checklist
 
 Before starting:
@@ -1161,6 +1163,10 @@ After implementing feature:
 - [ ] Snackbar notifications showing
 - [ ] No linter warnings
 - [ ] Feature documented
+- [ ] UI follows design replication protocol
+- [ ] Components extracted to common/ if reusable
+- [ ] File lengths within limits (<300 lines)
+- [ ] Design system applied consistently
 
 ## Time Estimate
 

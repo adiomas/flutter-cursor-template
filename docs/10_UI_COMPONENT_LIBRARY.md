@@ -2,6 +2,8 @@
 
 Build a comprehensive, reusable component library - buttons, forms, cards, and more.
 
+> **AI Component Guidelines:** For automatic component extraction, design replication, and component architecture patterns, see [`.cursor/rules/ui_ux_excellence.md`](../../.cursor/rules/ui_ux_excellence.md). AI automatically creates reusable widgets when patterns repeat ≥2 times and follows the component extraction strategy for maintainable code.
+
 ## Component Structure
 
 ```
@@ -416,6 +418,8 @@ Future<bool?> showConfirmDialog(
 2. Don't skip accessibility
 3. Don't forget loading states
 4. Don't ignore error states
+
+> **Comprehensive Guidelines:** For complete UI/UX implementation workflows, component extraction strategies, and quality checklists, see [`.cursor/rules/ui_ux_excellence.md`](../../.cursor/rules/ui_ux_excellence.md). This includes design replication protocols, file organization rules, and advanced UI patterns.
 
 ## Next Steps
 
