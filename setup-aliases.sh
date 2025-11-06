@@ -64,8 +64,26 @@ cursor-update() {
   # Clone latest
   git clone https://github.com/adiomas/flutter-cursor-template.git .cursor-tmp
   
-  # Update files
-  cp -r .cursor-tmp/.cursor/rules .cursor/ 2>/dev/null || true
+  # Update files - kopiraj SVE iz .cursor/ osim project_context.md
+  if [ -d .cursor-tmp/.cursor ]; then
+    # Kopiraj rules
+    cp -r .cursor-tmp/.cursor/rules .cursor/ 2>/dev/null || true
+    
+    # Kopiraj notepads (osim project_context.md koji ćemo restore-ati)
+    mkdir -p .cursor/notepads
+    for file in .cursor-tmp/.cursor/notepads/*; do
+      if [ -f "$file" ] && [ "$(basename "$file")" != "project_context.md" ]; then
+        cp "$file" .cursor/notepads/ 2>/dev/null || true
+      fi
+    done
+    
+    # Kopiraj tools folder ako postoji
+    if [ -d .cursor-tmp/.cursor/tools ]; then
+      cp -r .cursor-tmp/.cursor/tools .cursor/ 2>/dev/null || true
+    fi
+  fi
+  
+  # Update root config files
   cp .cursor-tmp/.cursorrules . 2>/dev/null || true
   cp .cursor-tmp/.cursorignore . 2>/dev/null || true
   cp -r .cursor-tmp/docs . 2>/dev/null || true
@@ -80,6 +98,7 @@ cursor-update() {
   rm -rf .cursor-tmp
   
   echo "✅ Template updated! Project context preserved."
+  echo "📋 Updated: rules, notepads, tools, docs, configs"
 }
 
 EOF
