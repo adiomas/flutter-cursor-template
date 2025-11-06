@@ -48,6 +48,15 @@ cd existing_project
 cursor-update
 ```
 
+**Update-a:**
+- ✅ `.cursor/rules/` - Sve rule fajlove
+- ✅ `.cursor/notepads/` - workflow_shortcuts.md, context7_patterns.md, SETUP_PROMPT.md
+- ✅ `.cursor/tools/` - Ako postoji u template-u
+- ✅ `.cursorrules` - AI config
+- ✅ `.cursorignore` - Ignore patterns
+- ✅ `docs/` - Sva dokumentacija
+- ✅ **Zadržava** `project_context.md` (tvoj project-specific info)
+
 **Done!** 🎉
 
 ---
