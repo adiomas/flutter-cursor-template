@@ -116,12 +116,49 @@ Useful for:
 ## Troubleshooting
 
 ### "Failed to download update script"
-```bash
-# Check internet connection
-curl -I https://raw.githubusercontent.com
 
-# Try again
+**Cause:** Repo is private or doesn't exist on GitHub.
+
+**Solution 1: Make Repo Public (Recommended)**
+```bash
+# On GitHub.com:
+# Settings → General → Danger Zone → Change visibility → Public
+
+# Verify:
+curl -I https://github.com/adiomas/flutter-cursor-template
+# Expected: HTTP/2 200
+```
+
+**Solution 2: Use GitHub Personal Access Token (Private Repo)**
+```bash
+# 1. Create token: https://github.com/settings/tokens
+#    Permissions: repo (Full control of private repositories)
+
+# 2. Set in shell:
+export GITHUB_PAT='ghp_yourTokenHere'
+
+# 3. Add to ~/.zshrc for persistence:
+echo 'export GITHUB_PAT="ghp_yourTokenHere"' >> ~/.zshrc
+
+# 4. Try update:
 cursor-update
+```
+
+**Solution 3: Use SSH Clone (Private Repo)**
+```bash
+# Update update-template.sh to use SSH:
+sed -i '' 's|https://github.com/adiomas/flutter-cursor-template.git|git@github.com:adiomas/flutter-cursor-template.git|g' update-template.sh
+
+# Update alias in setup-aliases.sh (same change)
+
+# Requires SSH key setup:
+# https://docs.github.com/en/authentication/connecting-to-github-with-ssh
+```
+
+### "curl: (56) The requested URL returned error: 404"
+```bash
+# Repo doesn't exist or is private
+# See solutions above
 ```
 
 ### "Not a Flutter project"
@@ -226,7 +263,29 @@ flutter-cursor-template/
 - 🔄 **Flow:** Alias → Download script → Run script → Update files
 - ✅ **Result:** Always latest, no sync issues, easy to maintain
 
+## Important: Repo Visibility
+
+**The update system requires repo to be accessible!**
+
+If you get **404 errors**, your repo is private or doesn't exist.
+
+**Quick fix:**
+```bash
+# Option 1: Make public (easiest)
+GitHub → Settings → Change visibility → Public
+
+# Option 2: Use SSH (private repo)
+# Updates scripts to use SSH automatically
+# Requires SSH key at: https://github.com/settings/keys
+
+# Option 3: Use PAT (private repo)
+export GITHUB_PAT='ghp_yourToken'
+echo 'export GITHUB_PAT="ghp_yourToken"' >> ~/.zshrc
+```
+
+**See full guide:** `REPO_VISIBILITY_GUIDE.md`
+
 ---
 
-**Questions?** See `docs/26_TROUBLESHOOTING.md`
+**Questions?** See `docs/26_TROUBLESHOOTING.md` or `REPO_VISIBILITY_GUIDE.md`
 

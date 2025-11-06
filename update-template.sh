@@ -22,8 +22,29 @@ fi
 
 # Clone latest template
 echo "📥 Downloading latest template..."
-# Use --depth 1 for faster clone, no cache
-git clone --depth 1 --no-single-branch https://github.com/adiomas/flutter-cursor-template.git .cursor-tmp 2>&1 | grep -v "Cloning into" || true
+
+# Try HTTPS first (works for public repos)
+REPO_URL="https://github.com/adiomas/flutter-cursor-template.git"
+
+if ! git clone --depth 1 --no-single-branch "$REPO_URL" .cursor-tmp 2>/dev/null; then
+    echo "⚠️  HTTPS clone failed, trying SSH..."
+    
+    # Try SSH (works for private repos with SSH key)
+    REPO_URL="git@github.com:adiomas/flutter-cursor-template.git"
+    
+    if ! git clone --depth 1 --no-single-branch "$REPO_URL" .cursor-tmp 2>/dev/null; then
+        echo "❌ Failed to clone template repo"
+        echo ""
+        echo "Repo appears to be private or inaccessible."
+        echo ""
+        echo "Solutions:"
+        echo "  1. Make repo public: GitHub → Settings → Change visibility"
+        echo "  2. Use SSH: Setup SSH key at https://github.com/settings/keys"
+        echo "  3. Use PAT: export GITHUB_PAT='your_token'"
+        echo ""
+        exit 1
+    fi
+fi
 
 # Show which version we're updating to
 cd .cursor-tmp
@@ -42,6 +63,13 @@ cp -r .cursor-tmp/.cursor/rules .cursor/ 2>/dev/null || true
 
 echo "  ✓ .cursor/tools/ (Python/Shell scripts)"
 cp -r .cursor-tmp/.cursor/tools .cursor/ 2>/dev/null || true
+
+echo "  ✓ .cursor/notepads/ (shared context - selective)"
+# Update only shared notepads, preserve project_context.md
+mkdir -p .cursor/notepads
+cp .cursor-tmp/.cursor/notepads/workflow_shortcuts.md .cursor/notepads/ 2>/dev/null || true
+cp .cursor-tmp/.cursor/notepads/context7_patterns.md .cursor/notepads/ 2>/dev/null || true
+cp .cursor-tmp/.cursor/notepads/SETUP_PROMPT.md .cursor/notepads/ 2>/dev/null || true
 
 echo "  ✓ .cursorrules (main AI config)"
 cp .cursor-tmp/.cursorrules . 2>/dev/null || true
@@ -63,7 +91,7 @@ fi
 
 echo ""
 echo "  ⊗ README.md (preserved - project-specific)"
-echo "  ⊗ .cursor/notepads/ (preserved - project context)"
+echo "  ⊗ .cursor/notepads/project_context.md (preserved - your project)"
 echo ""
 
 # Restore project context

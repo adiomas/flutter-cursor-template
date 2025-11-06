@@ -48,10 +48,12 @@ cd existing_project
 cursor-update
 ```
 
+> ⚠️ **Ako dobijete 404 error:** Repo mora biti public ili konfigurirajte access!  
+> 📖 **Rješenja:** [REPO_VISIBILITY_GUIDE.md](REPO_VISIBILITY_GUIDE.md)
+
 **Update-a:**
 - ✅ `.cursor/rules/` - Sve rule fajlove
-- ✅ `.cursor/notepads/` - workflow_shortcuts.md, context7_patterns.md, SETUP_PROMPT.md
-- ✅ `.cursor/tools/` - Ako postoji u template-u
+- ✅ `.cursor/tools/` - Python/Shell scripts
 - ✅ `.cursorrules` - AI config
 - ✅ `.cursorignore` - Ignore patterns
 - ✅ `docs/` - Sva dokumentacija
@@ -231,6 +233,8 @@ cursor-update  # Automatski update, zadržava project_context.md
 - `.cursor/notepads/workflow_shortcuts.md` - Quick commands
 
 **Issues?**
+- **404 errors?** → [REPO_VISIBILITY_GUIDE.md](REPO_VISIBILITY_GUIDE.md)
+- **Update not working?** → [UPDATE_SYSTEM.md](UPDATE_SYSTEM.md)
 - Open issue na [GitHub](https://github.com/adiomas/flutter-cursor-template)
 - Check template version
 - Verify MCP setup (Context7)
