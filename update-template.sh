@@ -25,11 +25,38 @@ echo "📥 Downloading latest template..."
 git clone https://github.com/adiomas/flutter-cursor-template.git .cursor-tmp
 
 # Update files
-echo "📝 Updating configuration files..."
+echo "📝 Updating template files..."
+echo ""
+
+# Always update these
+echo "  ✓ .cursor/rules/ (AI rules)"
 cp -r .cursor-tmp/.cursor/rules .cursor/ 2>/dev/null || true
+
+echo "  ✓ .cursor/tools/ (Python/Shell scripts)"
+cp -r .cursor-tmp/.cursor/tools .cursor/ 2>/dev/null || true
+
+echo "  ✓ .cursorrules (main AI config)"
 cp .cursor-tmp/.cursorrules . 2>/dev/null || true
+
+echo "  ✓ .cursorignore (ignore patterns)"
 cp .cursor-tmp/.cursorignore . 2>/dev/null || true
+
+echo "  ✓ docs/ (documentation)"
 cp -r .cursor-tmp/docs . 2>/dev/null || true
+
+echo "  ✓ setup-aliases.sh (alias setup)"
+cp .cursor-tmp/setup-aliases.sh . 2>/dev/null || true
+
+# Update setup guide if it exists (template-specific)
+if [ -f .cursor-tmp/CURSOR_AI_SETUP.md ]; then
+    echo "  ✓ CURSOR_AI_SETUP.md (setup guide)"
+    cp .cursor-tmp/CURSOR_AI_SETUP.md . 2>/dev/null || true
+fi
+
+echo ""
+echo "  ⊗ README.md (preserved - project-specific)"
+echo "  ⊗ .cursor/notepads/ (preserved - project context)"
+echo ""
 
 # Restore project context
 if [ -f .cursor/notepads/project_context.md.backup ]; then

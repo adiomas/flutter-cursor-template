@@ -126,5 +126,46 @@ Check if `mounted` before calling setState
 
 ---
 
+## Template Update Issues
+
+### cursor-update doesn't update all files
+
+**Problem:** Running `cursor-update` alias doesn't update `.cursor/tools/` or other files.
+
+**What gets updated:**
+- ✅ `.cursor/rules/` - AI rules and patterns
+- ✅ `.cursor/tools/` - Python/Shell utility scripts
+- ✅ `.cursorrules` - Main AI configuration
+- ✅ `.cursorignore` - Ignore patterns
+- ✅ `docs/` - All documentation
+- ✅ `setup-aliases.sh` - Alias setup script
+- ✅ `CURSOR_AI_SETUP.md` - Setup guide
+
+**What is preserved (not updated):**
+- ⊗ `README.md` - Your project-specific README
+- ⊗ `.cursor/notepads/` - Your project context and notes
+- ⊗ `pubspec.yaml` - Your project dependencies
+- ⊗ `lib/` - Your application code
+
+**Why some files are preserved:**
+- Project-specific files should not be overwritten
+- Your custom notes and context are important
+- Only template-related files get updated
+
+**Solution:** The update script now includes all template files. Run `cursor-update` to get the latest version.
+
+**Manual update if needed:**
+```bash
+# Full manual update
+git clone https://github.com/adiomas/flutter-cursor-template.git /tmp/template
+cp -r /tmp/template/.cursor/rules .cursor/
+cp -r /tmp/template/.cursor/tools .cursor/
+cp -r /tmp/template/docs .
+cp /tmp/template/.cursorrules .
+rm -rf /tmp/template
+```
+
+---
+
 **Solutions to common problems!**
 
