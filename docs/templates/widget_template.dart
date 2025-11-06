@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../common/presentation/build_context_extensions.dart';
+import '../../../../common/presentation/extensions/localization_extension.dart';
 import '../../../../common/presentation/spacing.dart';
 import '../../domain/entities/feature_entity.dart';
 
@@ -54,7 +55,7 @@ class FeatureListItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'New',
+                        'New',  // Note: Add to ARB if needed for translation
                         style: context.textStyles.caption.copyWith(
                           color: context.appColors.primary,
                         ),
@@ -75,7 +76,7 @@ class FeatureListItem extends StatelessWidget {
               
               spacing8,
               Text(
-                'Created ${_formatDate(feature.createdAt)}',
+                context.l10n.formattedDate(feature.createdAt),
                 style: context.textStyles.caption.copyWith(
                   color: context.appColors.greyText,
                 ),
@@ -87,15 +88,16 @@ class FeatureListItem extends StatelessWidget {
     );
   }
   
-  String _formatDate(DateTime date) {
+  String _formatRelativeDate(BuildContext context, DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
     
-    if (diff.inDays == 0) return 'today';
-    if (diff.inDays == 1) return 'yesterday';
-    if (diff.inDays < 7) return '${diff.inDays} days ago';
-    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()} weeks ago';
-    return '${date.day}/${date.month}/${date.year}';
+    if (diff.inDays == 0) return context.l10n.dateToday;
+    if (diff.inDays == 1) return context.l10n.dateYesterday;
+    if (diff.inDays < 7) return context.l10n.daysAgo(diff.inDays);
+    
+    // For older dates, use formatted date
+    return context.l10n.formattedDate(date);
   }
 }
 

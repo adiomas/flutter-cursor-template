@@ -833,3 +833,376 @@ class Config {
 - Update `README.md`
 - Document environment setup
 
+---
+
+## 🤖 AUTOMATED DEPENDENCY VERSION CHECKING
+
+### CRITICAL RULE: Always Use Latest Stable Versions
+
+**Before adding ANY dependency**, AI MUST run automated version checker:
+
+```bash
+python .cursor/tools/check_latest_versions.py [package_name]
+```
+
+### Workflow for Adding Dependencies
+
+1. **Detect Dependency Need** from user request (automatic)
+2. **Check Latest Version:**
+   ```bash
+   python .cursor/tools/check_latest_versions.py dio
+   ```
+3. **Verify Package Quality:**
+   - Score ≥ 130: ✅ Excellent - use immediately
+   - Score ≥ 100: ⚠️ Acceptable - mention in comment
+   - Score < 100: ❌ Poor - suggest alternative or ask user
+4. **Add to pubspec.yaml** with caret syntax:
+   ```yaml
+   dependencies:
+     package_name: ^X.Y.Z  # From automated check
+   ```
+5. **Run:** `flutter pub get`
+
+### Why This Matters
+
+❌ **Never do this:**
+- Copy versions from old tutorials
+- Use versions from memory
+- Skip version checking
+- Use outdated packages
+
+✅ **Always do this:**
+- Run automated checker
+- Use latest stable version
+- Check package score
+- Document why package chosen
+
+### Quick Command
+
+```bash
+# Check single package
+python .cursor/tools/check_latest_versions.py riverpod
+
+# Check all recommended
+python .cursor/tools/check_latest_versions.py
+```
+
+**Output:** Latest version + pub score + ready-to-use YAML
+
+For full documentation: `.cursor/tools/README.md`
+
+---
+
+## 🌍 INTERNATIONALIZATION (i18n) - ZERO TOLERANCE POLICY
+
+### CRITICAL RULE: NO HARDCODED STRINGS
+
+**NEVER, EVER hardcode UI strings in code!**
+
+### Mandatory i18n Compliance
+
+Every single UI string MUST use localization from day one:
+
+```dart
+// ❌ FORBIDDEN - Will fail code review
+Text('Save')
+Text('Hello, $name!')
+
+// ✅ REQUIRED - Only acceptable way
+Text(context.l10n.save)
+Text(context.l10n.greetingHello(name))
+```
+
+### Automatic i18n Setup
+
+When starting new project or adding feature, AI automatically:
+
+1. **Check if i18n configured** (l10n.yaml exists)
+2. **If not configured:**
+   - Copy l10n setup from `docs/templates/l10n_setup/`
+   - Configure MaterialApp with localization delegates
+   - Create base ARB files
+   - Generate localization code
+3. **If configured:**
+   - Verify all needed keys exist in ARB
+   - Add missing keys before implementing UI
+   - Use `context.l10n.*` for all text
+
+### Adding New Strings Workflow
+
+1. **Add to base ARB** (`lib/l10n/arb/app_en.arb`):
+   ```json
+   {
+     "myNewString": "My New Text",
+     "@myNewString": {
+       "description": "Description for translators"
+     }
+   }
+   ```
+2. **Run code generation:**
+   ```bash
+   flutter gen-l10n
+   ```
+3. **Use in code:**
+   ```dart
+   Text(context.l10n.myNewString)
+   ```
+4. **Add to other languages** (app_hr.arb, etc.)
+
+### i18n Patterns
+
+**Simple Text:**
+```dart
+Text(context.l10n.save)
+ElevatedButton(
+  onPressed: () {},
+  child: Text(context.l10n.save),
+)
+```
+
+**With Parameters:**
+```dart
+Text(context.l10n.greetingHello(userName))
+```
+
+**Plural Forms:**
+```dart
+Text(context.l10n.itemsCount(count))
+// Automatically: "No items" / "1 item" / "5 items"
+```
+
+**Date Formatting:**
+```dart
+Text(context.l10n.formattedDate(DateTime.now()))
+Text(context.l10n.daysAgo(3))  // "3 days ago"
+```
+
+**Error Messages:**
+```dart
+// ❌ NEVER
+ref.read(snackbarProvider).showError('Something went wrong');
+
+// ✅ ALWAYS
+ref.read(snackbarProvider).showError(context.l10n.errorGeneric);
+```
+
+### Common i18n Keys (Always Available)
+
+After setup, these keys are always available:
+
+**Actions:**
+- `save`, `cancel`, `delete`, `edit`, `close`, `back`, `next`, `done`, `retry`
+
+**Validation:**
+- `validationRequired`, `validationEmail`, `validationPassword`, etc.
+
+**Errors:**
+- `errorGeneric`, `errorNetwork`, `errorNotFound`, `errorUnauthorized`
+
+**Success:**
+- `successSaved`, `successDeleted`, `successUpdated`, `successCreated`
+
+**Empty States:**
+- `emptyListTitle`, `emptyListMessage`
+
+**Auth:**
+- `authLogin`, `authRegister`, `authEmail`, `authPassword`, etc.
+
+**Dates:**
+- `dateToday`, `dateYesterday`, `dateTomorrow`
+
+### Detection & Automatic Setup
+
+When AI detects UI implementation, automatically:
+
+1. Check if strings are hardcoded
+2. If yes → Add to ARB first
+3. Run `flutter gen-l10n`
+4. Implement with `context.l10n.*`
+5. Verify no hardcoded strings remain
+
+### Quality Checks
+
+Before presenting code, AI verifies:
+- [ ] No `Text('hardcoded')` patterns
+- [ ] All strings use `context.l10n.*`
+- [ ] Parameters used correctly
+- [ ] Plural forms for counts
+- [ ] Date formatting uses l10n
+- [ ] Import includes `localization_extension.dart`
+
+### Documentation
+
+Full i18n guide: `docs/17_INTERNATIONALIZATION.md`
+Setup templates: `docs/templates/l10n_setup/`
+Checklist: `docs/checklists/i18n_checklist.md`
+
+---
+
+## 🎯 COMPLETE IMPLEMENTATION CHECKLIST
+
+Every feature implementation must include:
+
+### Mandatory Items (Non-Negotiable)
+
+1. ✅ **Latest Dependencies**
+   - Run version checker before adding packages
+   - Use caret (`^`) syntax
+   - Document why package chosen
+
+2. ✅ **Complete i18n**
+   - NO hardcoded strings
+   - All text in ARB files
+   - Use `context.l10n.*` everywhere
+   - Descriptions for translators
+
+3. ✅ **Clean Architecture**
+   - Data/domain/presentation layers
+   - Repository pattern
+   - BaseNotifier + BaseState
+
+4. ✅ **Error Handling**
+   - Either pattern
+   - User-friendly messages (localized!)
+   - Network error detection
+
+5. ✅ **Design System**
+   - `context.appColors.*` only
+   - `context.textStyles.*` only
+   - No hardcoded values
+
+6. ✅ **State Management**
+   - Loading/error/empty states
+   - Pull-to-refresh
+   - Optimistic updates where appropriate
+
+7. ✅ **Performance**
+   - `const` constructors
+   - ListView.builder for lists
+   - Image caching
+   - Pagination for large lists
+
+### Pre-Commit Verification
+
+Before showing code to user, verify:
+```typescript
+// AI Mental Checklist
+[x] Dependencies checked with automated tool
+[x] All strings localized (zero hardcoded)
+[x] All layers present (data/domain/presentation)
+[x] BaseNotifier + BaseState used
+[x] Either pattern for errors
+[x] Loading/error/empty states
+[x] Design system applied
+[x] Navigation configured
+[x] `const` constructors used
+[x] No linter warnings
+```
+
+---
+
+## 🚫 FORBIDDEN PATTERNS
+
+These patterns will be REJECTED:
+
+### ❌ Hardcoded Strings
+```dart
+Text('Save')  // FORBIDDEN
+title: const Text('Features')  // FORBIDDEN
+showError('Something went wrong')  // FORBIDDEN
+```
+
+### ❌ Manual Dependency Versions
+```yaml
+# FORBIDDEN - copied from tutorial
+dependencies:
+  dio: ^4.0.0  # Outdated!
+```
+
+### ❌ Hardcoded Colors/Styles
+```dart
+color: Colors.blue  // FORBIDDEN
+fontSize: 16  // FORBIDDEN
+```
+
+### ❌ Missing Error Handling
+```dart
+final data = await repository.getData();  // No Either pattern!
+```
+
+### ❌ String Concatenation for UI
+```dart
+Text('Hello, ' + name + '!')  // FORBIDDEN - use parameters
+```
+
+---
+
+## ✅ REQUIRED PATTERNS
+
+These patterns are MANDATORY:
+
+### ✅ Localized Strings
+```dart
+Text(context.l10n.save)
+Text(context.l10n.greetingHello(name))
+```
+
+### ✅ Automated Dependency Checking
+```bash
+python .cursor/tools/check_latest_versions.py dio
+# Then use returned version
+```
+
+### ✅ Design System
+```dart
+color: context.appColors.primary
+style: context.textStyles.bodyText1
+```
+
+### ✅ Error Handling
+```dart
+final result = await repository.getData();
+result.fold(
+  (failure) => context.l10n.errorGeneric,
+  (data) => data,
+);
+```
+
+### ✅ Complete States
+```dart
+switch (state) {
+  BaseLoading() => LoadingShimmer(),
+  BaseData(:final data) => data.isEmpty 
+    ? EmptyView() 
+    : ContentView(data),
+  BaseError(:final failure) => ErrorView(failure),
+  _ => SizedBox.shrink(),
+}
+```
+
+---
+
+## 🎓 AI LEARNING POINTS
+
+### Priority 1: Zero Hardcoded Strings
+- Most common mistake
+- Breaks internationalization
+- Hard to fix later
+- **Solution:** Always use `context.l10n.*`
+
+### Priority 2: Latest Dependencies
+- Security issues with old versions
+- Missing features
+- Poor pub scores
+- **Solution:** Always run version checker
+
+### Priority 3: Complete Implementation
+- Don't skip error handling
+- Don't skip loading states
+- Don't skip empty states
+- **Solution:** Use templates, follow checklist
+
+---
+
+**Remember:** These rules ensure production-ready code from day one!
+

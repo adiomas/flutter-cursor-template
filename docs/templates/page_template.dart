@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../common/presentation/build_context_extensions.dart';
+import '../../../../common/presentation/extensions/localization_extension.dart';
 import '../../../../common/presentation/spacing.dart';
 import '../../domain/notifiers/features_list_notifier.dart';
 import '../widgets/feature_list_item.dart';
@@ -34,7 +35,7 @@ class FeaturesPage extends HookConsumerWidget {
       backgroundColor: context.appColors.contentBackground,
       appBar: AppBar(
         backgroundColor: context.appColors.background,
-        title: const Text('Features'),
+        title: Text(context.l10n.featuresTitle),
       ),
       body: RefreshIndicator(
         onRefresh: onRefresh,
@@ -88,12 +89,12 @@ class EmptyFeaturesView extends StatelessWidget {
           ),
           spacing16,
           Text(
-            'No features yet',
+            context.l10n.emptyListTitle,
             style: context.textStyles.headline2,
           ),
           spacing8,
           Text(
-            'Tap + to create your first feature',
+            context.l10n.emptyListMessage,
             style: context.textStyles.greyBodyText1,
           ),
         ],

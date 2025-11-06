@@ -139,6 +139,89 @@
 
 ---
 
+### Internationalization (i18n) Detection
+
+**Trigger Keywords:** `translate`, `translation`, `jezik`, `language`, `i18n`, `l10n`, `lokalizacija`, `multilingual`
+
+**Auto-read:**
+```
+1. docs/17_INTERNATIONALIZATION.md
+2. docs/templates/l10n_setup/README.md
+3. docs/checklists/i18n_checklist.md
+```
+
+**Automatic Actions:**
+
+1. **Check if i18n configured:**
+   - Look for `l10n.yaml` in project root
+   - Check if `lib/l10n/arb/` directory exists
+   - Verify `MaterialApp` has localization delegates
+
+2. **If NOT configured:**
+   - Copy setup from `docs/templates/l10n_setup/`
+   - Create ARB files (English + requested languages)
+   - Configure MaterialApp
+   - Generate localization code (`flutter gen-l10n`)
+
+3. **If configured:**
+   - Add requested language ARB file
+   - Update `supportedLocales` in MaterialApp
+   - Add to language selector widget
+   - Generate localization code
+
+**Example:**
+- User: "Dodaj hrvatski jezik"
+- AI: [Auto-reads i18n docs] → Adds Croatian ARB, updates config, generates code
+
+**Example:**
+- User: "App needs to support multiple languages"
+- AI: [Auto-reads i18n docs] → Configures complete i18n setup from scratch
+
+---
+
+### Dependency/Package Detection
+
+**Trigger Keywords:** `dodaj package`, `dependency`, `install`, `pub`, `verzija`, `version`
+
+**Auto-read:**
+```
+1. docs/02_DEPENDENCIES_STRATEGY.md
+2. .cursor/tools/README.md
+```
+
+**Automatic Actions:**
+
+1. **Run automated version checker:**
+   ```bash
+   python .cursor/tools/check_latest_versions.py [package_name]
+   ```
+
+2. **Verify package quality:**
+   - Check pub score (must be ≥ 130 for production)
+   - Check popularity metrics
+   - Verify maintenance status
+
+3. **Add to pubspec.yaml** with latest version:
+   ```yaml
+   dependencies:
+     package_name: ^X.Y.Z  # From automated check
+   ```
+
+4. **Run pub get:**
+   ```bash
+   flutter pub get
+   ```
+
+**Example:**
+- User: "Treba mi dio package"
+- AI: [Runs version checker] → Shows latest version (^5.6.0) → Adds to pubspec
+
+**Example:**
+- User: "Dodaj cached_network_image"
+- AI: [Runs version checker] → Checks score → Adds with latest version
+
+---
+
 ### Deployment Detection
 
 **Trigger Keywords:** `deploy`, `build`, `release`, `publish`, `store`
@@ -195,7 +278,18 @@ These are **non-negotiable** and should be applied automatically:
    - Use only `context.textStyles.*`
    - Follow spacing constants
 
-5. **Code Templates** (`docs/templates/`)
+5. **Internationalization** (`docs/17_INTERNATIONALIZATION.md`)
+   - **NO hardcoded strings** - EVER!
+   - All UI text via `context.l10n.*`
+   - Add keys to ARB before implementing UI
+   - Run `flutter gen-l10n` after ARB changes
+
+6. **Latest Dependencies** (`docs/02_DEPENDENCIES_STRATEGY.md`)
+   - Run `python .cursor/tools/check_latest_versions.py [package]`
+   - Verify pub score ≥ 130
+   - Use caret (`^`) syntax in pubspec.yaml
+
+7. **Code Templates** (`docs/templates/`)
    - Always start from templates
    - Never write from scratch
 
@@ -377,6 +471,8 @@ You infer:
 - ❌ Error handling
 - ❌ Loading states
 - ❌ Design system styling
+- ❌ Localization (NO hardcoded strings!)
+- ❌ Latest dependency versions (run version checker!)
 
 ## ✅ What TO Do Always
 
@@ -388,6 +484,8 @@ You infer:
 6. **Think in Layers** (data/domain/presentation)
 7. **Handle Errors Gracefully**
 8. **Style Consistently**
+9. **Localize Everything** (zero hardcoded strings)
+10. **Check Dependency Versions** (run automated tool)
 
 ## 🎯 Final Rule
 

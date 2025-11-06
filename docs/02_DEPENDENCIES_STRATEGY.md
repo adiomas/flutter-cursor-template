@@ -13,6 +13,118 @@ Elite approach to managing Flutter dependencies - choosing the right packages, m
 3. **Performance First:** No bloated packages
 4. **Tree-Shakeable:** Support for dead code elimination
 5. **License Compatible:** Check license compatibility (MIT, BSD, Apache 2.0)
+6. **Always Latest Stable:** Use automated tools to get latest versions
+
+## 🤖 Automated Version Checking
+
+**IMPORTANT:** Always use the latest stable versions when adding dependencies!
+
+### Quick Start
+
+```bash
+# Check all recommended packages
+python .cursor/tools/check_latest_versions.py
+
+# Check specific package
+python .cursor/tools/check_latest_versions.py package_name
+```
+
+### For AI Agents (Cursor)
+
+When user requests a feature that needs a new dependency:
+
+1. **Detect dependency need** from context
+2. **Check latest version automatically:**
+   ```bash
+   python .cursor/tools/check_latest_versions.py [package_name]
+   ```
+3. **Verify package quality:**
+   - Score ≥ 130: ✅ Excellent - use immediately
+   - Score ≥ 100: ⚠️ Acceptable - mention in comment
+   - Score < 100: ❌ Poor - suggest alternative or ask user
+4. **Add to pubspec.yaml** with caret syntax:
+   ```yaml
+   dependencies:
+     package_name: ^X.Y.Z  # Latest from automated check
+   ```
+5. **Run:** `flutter pub get`
+
+### Why Automated Checking?
+
+**Manual version checking problems:**
+- ❌ Outdated versions in examples/tutorials
+- ❌ Copy-paste from old projects
+- ❌ Forgetting to check pub.dev
+- ❌ Missing security updates
+
+**Automated checking benefits:**
+- ✅ Always get latest stable version
+- ✅ See package quality scores
+- ✅ Consistent across team
+- ✅ Catches unmaintained packages
+- ✅ Generated `pubspec.yaml` ready to copy
+
+### Tool Features
+
+The version checker provides:
+
+```
+🔍 Flutter Dependency Version Checker
+
+Checking hooks_riverpod...
+✓ hooks_riverpod: ^2.5.2
+  Score: 140/140 | Popularity: 98%
+
+━━━ PUBSPEC.YAML ━━━
+dependencies:
+  flutter:
+    sdk: flutter
+
+  hooks_riverpod: ^2.5.2
+  ...
+
+✓ Saved to .cursor/tools/latest_versions.yaml
+✓ Saved report to .cursor/tools/dependency_report.md
+```
+
+**Output files:**
+- `.cursor/tools/latest_versions.yaml` - Ready to copy versions
+- `.cursor/tools/dependency_report.md` - Detailed markdown report
+
+### Integration in Workflow
+
+**Before adding any package:**
+
+```bash
+# 1. Check version
+python .cursor/tools/check_latest_versions.py dio
+
+# 2. Review output (score, popularity)
+✓ dio: ^5.6.0
+  Score: 140/140 | Popularity: 95%
+
+# 3. Add to pubspec.yaml
+dependencies:
+  dio: ^5.6.0
+
+# 4. Get package
+flutter pub get
+```
+
+**Monthly maintenance:**
+
+```bash
+# Check all packages for updates
+python .cursor/tools/check_latest_versions.py
+
+# Compare with current pubspec.yaml
+flutter pub outdated
+
+# Update if needed
+flutter pub upgrade
+```
+
+For full documentation, see [`.cursor/tools/README.md`](../.cursor/tools/README.md).
 
 ## Package Evaluation Checklist
 
@@ -579,13 +691,168 @@ package:
   path: ../local_package
 ```
 
+## CI/CD Integration for Version Checking
+
+Automate dependency checks in your CI/CD pipeline:
+
+### GitHub Actions Example
+
+Create `.github/workflows/check_dependencies.yml`:
+
+```yaml
+name: Check Dependencies
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly on Monday
+  pull_request:
+    paths:
+      - 'pubspec.yaml'
+  workflow_dispatch:
+
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Check dependency versions
+        run: python .cursor/tools/check_latest_versions.py
+      
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-report
+          path: .cursor/tools/dependency_report.md
+      
+      - name: Check for low scores
+        run: |
+          if grep -q "❌ Low Score" .cursor/tools/dependency_report.md; then
+            echo "::warning::Some dependencies have low pub scores"
+          fi
+```
+
+### Pre-commit Hook
+
+Create `.git/hooks/pre-commit`:
+
+```bash
+#!/bin/bash
+# Check if pubspec.yaml changed
+if git diff --cached --name-only | grep -q "pubspec.yaml"; then
+    echo "Checking dependency versions..."
+    python .cursor/tools/check_latest_versions.py
+    
+    # Optionally fail if low scores
+    if grep -q "❌" .cursor/tools/dependency_report.md; then
+        echo "⚠️  Warning: Some dependencies have issues"
+        echo "Review .cursor/tools/dependency_report.md"
+    fi
+fi
+```
+
+### Automated Update PR
+
+Create `.github/workflows/update_dependencies.yml`:
+
+```yaml
+name: Update Dependencies
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'  # Monthly
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+      
+      - name: Update dependencies
+        run: |
+          flutter pub upgrade --major-versions
+          python .cursor/tools/check_latest_versions.py
+      
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: 'chore: update dependencies'
+          title: 'Update Flutter Dependencies'
+          body: |
+            Automated dependency update
+            
+            See dependency report in artifacts
+          branch: automated/dependency-update
+```
+
+## Best Practices Summary
+
+### ✅ DO
+
+- ✅ Use automated version checker before adding packages
+- ✅ Prefer packages with score ≥ 130
+- ✅ Use caret (`^`) syntax for versions
+- ✅ Commit `pubspec.lock`
+- ✅ Update monthly
+- ✅ Read CHANGELOGs before major updates
+- ✅ Test after updates
+- ✅ Document why each package was chosen
+
+### ❌ DON'T
+
+- ❌ Use exact versions (locks updates)
+- ❌ Add packages without checking score
+- ❌ Skip testing after updates
+- ❌ Ignore deprecation warnings
+- ❌ Copy versions from old tutorials
+- ❌ Add packages "just in case"
+- ❌ Use unmaintained packages
+
+## Quick Commands Reference
+
+```bash
+# Check latest versions
+python .cursor/tools/check_latest_versions.py [package]
+
+# Add dependency (after checking version)
+flutter pub add package_name
+
+# Check for outdated packages
+flutter pub outdated
+
+# Update packages (respects constraints)
+flutter pub upgrade
+
+# Update to latest (including major)
+flutter pub upgrade --major-versions
+
+# Clean and rebuild
+flutter clean && flutter pub get
+
+# Analyze dependency tree
+flutter pub deps
+
+# Check for unused dependencies
+dart pub deps --no-dev | grep -v "^|"
+```
+
 ## Next Steps
 
 - **Setup Environment:** Configure in [03_ENVIRONMENT_CONFIG.md](03_ENVIRONMENT_CONFIG.md)
 - **Architecture:** Understand in [04_CLEAN_ARCHITECTURE.md](04_CLEAN_ARCHITECTURE.md)
 - **State Management:** Implement in [05_STATE_MANAGEMENT.md](05_STATE_MANAGEMENT.md)
+- **Version Checker Tool:** See [`.cursor/tools/README.md`](../.cursor/tools/README.md)
 
 ---
 
-**Remember:** Every dependency is a promise to maintain. Choose wisely!
+**Remember:** Every dependency is a promise to maintain. Use automation to choose wisely! 🤖
 

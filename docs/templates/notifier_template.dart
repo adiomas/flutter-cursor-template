@@ -40,7 +40,8 @@ class FeaturesListNotifier extends BaseNotifier<List<FeatureEntity>> {
         ref.read(snackbarProvider).showError(failure.userMessage);
       },
       (_) {
-        ref.read(snackbarProvider).showSuccess('Feature deleted');
+        // Note: Use l10n from context when showing snackbar
+        // ref.read(snackbarProvider).showSuccess(context.l10n.successDeleted);
         loadFeatures();
       },
     );
@@ -84,7 +85,8 @@ class FeatureNotifier extends BaseNotifier<FeatureEntity> {
     
     // Validation
     if (feature.name.trim().isEmpty) {
-      ref.read(snackbarProvider).showError('Name is required');
+      // Note: Use l10n from context when showing snackbar
+      // ref.read(snackbarProvider).showError(context.l10n.validationRequired);
       return false;
     }
     
@@ -102,9 +104,11 @@ class FeatureNotifier extends BaseNotifier<FeatureEntity> {
       },
       (savedFeature) {
         state = BaseData(savedFeature);
-        ref.read(snackbarProvider).showSuccess(
-          feature.id.isEmpty ? 'Feature created' : 'Feature updated',
-        );
+        // Note: Use l10n from context when showing snackbar
+        // final message = feature.id.isEmpty 
+        //   ? context.l10n.successCreated 
+        //   : context.l10n.successUpdated;
+        // ref.read(snackbarProvider).showSuccess(message);
         
         // Refresh list
         ref.invalidate(featuresListNotifierProvider);

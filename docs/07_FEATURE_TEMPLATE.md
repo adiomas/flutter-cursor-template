@@ -1181,6 +1181,394 @@ After implementing feature:
 6. **Missing loading states**
 7. **Hardcoded strings instead of localization**
 
+## 🌍 Internationalization (i18n) Implementation
+
+### CRITICAL: No Hardcoded Strings!
+
+**Before implementing UI**, add ALL strings to ARB files.
+
+### Step-by-Step i18n Integration
+
+#### 1. Check if i18n is Configured
+
+```bash
+# Check for these files:
+# - l10n.yaml (project root)
+# - lib/l10n/arb/app_en.arb
+# - lib/common/presentation/extensions/localization_extension.dart
+```
+
+If not configured, copy setup from `docs/templates/l10n_setup/`.
+
+#### 2. Add Feature Strings to ARB
+
+**Edit `lib/l10n/arb/app_en.arb`:**
+
+```json
+{
+  "@@locale": "en",
+  
+  "@@_TASKS_FEATURE": "═══════════════════════════════════════",
+  "tasksTitle": "Tasks",
+  "@tasksTitle": {
+    "description": "Tasks page title"
+  },
+  
+  "tasksEmpty": "No tasks yet",
+  "tasksEmptyMessage": "Tap + to create your first task",
+  
+  "taskDetailsTitle": "Task Details",
+  "taskEditTitle": "Edit Task",
+  "taskCreateTitle": "New Task",
+  
+  "taskFieldTitle": "Title",
+  "taskFieldDescription": "Description",
+  "taskFieldPriority": "Priority",
+  "taskFieldDueDate": "Due Date",
+  
+  "taskPriorityLow": "Low",
+  "taskPriorityMedium": "Medium",
+  "taskPriorityHigh": "High",
+  
+  "taskStatusPending": "Pending",
+  "taskStatusCompleted": "Completed",
+  
+  "taskDeleteConfirm": "Delete this task?",
+  "taskDeleteSuccess": "Task deleted",
+  "taskSaveSuccess": "Task saved",
+  "taskCreateSuccess": "Task created",
+  
+  "taskValidationTitleRequired": "Title is required",
+  "taskValidationTitleTooShort": "Title must be at least 3 characters",
+  
+  "taskDueToday": "Due today",
+  "taskDueTomorrow": "Due tomorrow",
+  "taskOverdue": "Overdue",
+  "taskDueInDays": "Due in {days} days",
+  "@taskDueInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  }
+}
+```
+
+#### 3. Generate Localization Code
+
+```bash
+flutter gen-l10n
+```
+
+This generates `lib/l10n/generated/app_localizations.dart`.
+
+#### 4. Use in UI Code
+
+**Import localization extension:**
+
+```dart
+import '../../../../common/presentation/extensions/localization_extension.dart';
+```
+
+**Page Title:**
+
+```dart
+// ❌ NEVER
+AppBar(
+  title: const Text('Tasks'),
+)
+
+// ✅ ALWAYS
+AppBar(
+  title: Text(context.l10n.tasksTitle),
+)
+```
+
+**Empty State:**
+
+```dart
+// ❌ NEVER
+Column(
+  children: [
+    Text('No tasks yet'),
+    Text('Tap + to create your first task'),
+  ],
+)
+
+// ✅ ALWAYS
+Column(
+  children: [
+    Text(context.l10n.tasksEmpty),
+    Text(context.l10n.tasksEmptyMessage),
+  ],
+)
+```
+
+**Buttons:**
+
+```dart
+// ❌ NEVER
+ElevatedButton(
+  child: const Text('Save'),
+  onPressed: () {},
+)
+
+// ✅ ALWAYS
+ElevatedButton(
+  child: Text(context.l10n.save),  // Using common key
+  onPressed: () {},
+)
+```
+
+**Form Fields:**
+
+```dart
+// ❌ NEVER
+TextField(
+  decoration: InputDecoration(
+    labelText: 'Title',
+    hintText: 'Enter task title',
+  ),
+)
+
+// ✅ ALWAYS
+TextField(
+  decoration: InputDecoration(
+    labelText: context.l10n.taskFieldTitle,
+    hintText: context.l10n.placeholderEnterText,
+  ),
+)
+```
+
+**Validation Messages:**
+
+```dart
+// ❌ NEVER
+if (title.isEmpty) {
+  return 'Title is required';
+}
+
+// ✅ ALWAYS
+if (title.isEmpty) {
+  return context.l10n.taskValidationTitleRequired;
+}
+```
+
+**Snackbars:**
+
+```dart
+// ❌ NEVER
+ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(content: Text('Task deleted')),
+);
+
+// ✅ ALWAYS
+ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(content: Text(context.l10n.taskDeleteSuccess)),
+);
+```
+
+**Dialog:**
+
+```dart
+// ❌ NEVER
+AlertDialog(
+  title: const Text('Delete Task'),
+  content: const Text('Are you sure?'),
+  actions: [
+    TextButton(
+      child: const Text('Cancel'),
+      onPressed: () => Navigator.pop(context),
+    ),
+    TextButton(
+      child: const Text('Delete'),
+      onPressed: () {},
+    ),
+  ],
+)
+
+// ✅ ALWAYS
+AlertDialog(
+  title: Text(context.l10n.taskDeleteConfirm),
+  actions: [
+    TextButton(
+      child: Text(context.l10n.cancel),
+      onPressed: () => Navigator.pop(context),
+    ),
+    TextButton(
+      child: Text(context.l10n.delete),
+      onPressed: () {},
+    ),
+  ],
+)
+```
+
+**Dropdown/Enum Values:**
+
+```dart
+// ❌ NEVER
+DropdownButton<Priority>(
+  items: [
+    DropdownMenuItem(value: Priority.low, child: Text('Low')),
+    DropdownMenuItem(value: Priority.medium, child: Text('Medium')),
+    DropdownMenuItem(value: Priority.high, child: Text('High')),
+  ],
+)
+
+// ✅ ALWAYS
+DropdownButton<Priority>(
+  items: [
+    DropdownMenuItem(value: Priority.low, child: Text(context.l10n.taskPriorityLow)),
+    DropdownMenuItem(value: Priority.medium, child: Text(context.l10n.taskPriorityMedium)),
+    DropdownMenuItem(value: Priority.high, child: Text(context.l10n.taskPriorityHigh)),
+  ],
+)
+```
+
+**Conditional Text (Status):**
+
+```dart
+// ❌ NEVER
+Text(task.completed ? 'Completed' : 'Pending')
+
+// ✅ ALWAYS
+Text(task.completed ? context.l10n.taskStatusCompleted : context.l10n.taskStatusPending)
+```
+
+**Date Formatting:**
+
+```dart
+// ❌ NEVER
+Text('Due: ${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year}')
+
+// ✅ ALWAYS
+Text(context.l10n.formattedDate(task.dueDate))
+```
+
+**Relative Dates:**
+
+```dart
+// ❌ NEVER
+final diff = task.dueDate.difference(DateTime.now()).inDays;
+Text(diff == 0 ? 'Today' : diff == 1 ? 'Tomorrow' : '$diff days')
+
+// ✅ ALWAYS
+final diff = task.dueDate.difference(DateTime.now()).inDays;
+if (diff == 0) {
+  return Text(context.l10n.taskDueToday);
+} else if (diff == 1) {
+  return Text(context.l10n.taskDueTomorrow);
+} else {
+  return Text(context.l10n.taskDueInDays(diff));
+}
+```
+
+#### 5. Add Translations to Other Languages
+
+**Edit `lib/l10n/arb/app_hr.arb`** (Croatian):
+
+```json
+{
+  "@@locale": "hr",
+  
+  "tasksTitle": "Zadaci",
+  "tasksEmpty": "Nema zadataka",
+  "tasksEmptyMessage": "Dodirni + za novi zadatak",
+  
+  "taskDetailsTitle": "Detalji zadatka",
+  "taskEditTitle": "Uredi zadatak",
+  "taskCreateTitle": "Novi zadatak",
+  
+  "taskFieldTitle": "Naslov",
+  "taskFieldDescription": "Opis",
+  "taskFieldPriority": "Prioritet",
+  "taskFieldDueDate": "Rok",
+  
+  "taskPriorityLow": "Nizak",
+  "taskPriorityMedium": "Srednji",
+  "taskPriorityHigh": "Visok",
+  
+  "taskStatusPending": "Na čekanju",
+  "taskStatusCompleted": "Završeno",
+  
+  "taskDeleteConfirm": "Obrisati ovaj zadatak?",
+  "taskDeleteSuccess": "Zadatak obrisan",
+  "taskSaveSuccess": "Zadatak spremljen",
+  "taskCreateSuccess": "Zadatak stvoren",
+  
+  "taskValidationTitleRequired": "Naslov je obavezan",
+  "taskValidationTitleTooShort": "Naslov mora imati najmanje 3 znaka",
+  
+  "taskDueToday": "Rok danas",
+  "taskDueTomorrow": "Rok sutra",
+  "taskOverdue": "Prekoračen rok",
+  "taskDueInDays": "Rok za {days} dana"
+}
+```
+
+Then run `flutter gen-l10n` again.
+
+#### 6. Testing i18n
+
+**Test in each language:**
+
+```dart
+// Change language in app
+ref.read(localeProvider.notifier).setCroatian();
+
+// Or test in widget test
+testWidgets('Task page shows Croatian', (tester) async {
+  await tester.pumpWidget(
+    MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('hr'),
+      home: const TasksPage(),
+    ),
+  );
+  
+  expect(find.text('Zadaci'), findsOneWidget);
+});
+```
+
+### i18n Checklist for Feature
+
+- [ ] All UI strings added to `app_en.arb`
+- [ ] Descriptions added for each string
+- [ ] `flutter gen-l10n` ran successfully
+- [ ] `localization_extension.dart` imported
+- [ ] ALL Text widgets use `context.l10n.*`
+- [ ] ALL buttons use `context.l10n.*`
+- [ ] ALL form labels use `context.l10n.*`
+- [ ] ALL error messages use `context.l10n.*`
+- [ ] ALL snackbars use `context.l10n.*`
+- [ ] ALL dialogs use `context.l10n.*`
+- [ ] Enum values localized
+- [ ] Status text localized
+- [ ] Date formatting uses l10n
+- [ ] Translations added to other languages
+- [ ] `flutter gen-l10n` ran for translations
+- [ ] Tested in all supported languages
+- [ ] No `Text('hardcoded')` found in grep
+
+### Quick Verification
+
+```bash
+# Check for hardcoded strings (rough check)
+grep -r "Text('" lib/features/tasks/ | grep -v ".l10n"
+
+# Should return ZERO results!
+```
+
+### Resources
+
+- Full i18n guide: `docs/17_INTERNATIONALIZATION.md`
+- Setup templates: `docs/templates/l10n_setup/`
+- Complete checklist: `docs/checklists/i18n_checklist.md`
+
+---
+
 ## Next Steps
 
 - **Navigation:** Deep dive in [08_NAVIGATION_SYSTEM.md](08_NAVIGATION_SYSTEM.md)
