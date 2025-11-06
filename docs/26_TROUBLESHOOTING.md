@@ -165,6 +165,35 @@ cp /tmp/template/.cursorrules .
 rm -rf /tmp/template
 ```
 
+### cursor-update shows old files after template was updated
+
+**Problem:** Template was updated on GitHub but `cursor-update` still pulls old version.
+
+**Cause:** GitHub CDN caching delay (1-5 minutes after push).
+
+**Solution:**
+```bash
+# Wait 2-3 minutes after template update
+sleep 180
+cursor-update
+
+# Or force fresh clone
+rm -rf .cursor-tmp
+cursor-update
+```
+
+**Verification:**
+```bash
+# Check when files were last modified
+ls -la .cursor/tools/
+ls -la docs/
+
+# Script now shows commit info:
+# 📌 Latest version: a1b2c3d - Update message (2 minutes ago)
+```
+
+**Prevention:** The update script now uses `--depth 1` for faster, cache-free clones.
+
 ---
 
 **Solutions to common problems!**
