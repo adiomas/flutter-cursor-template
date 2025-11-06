@@ -21,18 +21,14 @@ fi
 # Add aliases
 cat >> ~/.zshrc << 'EOF'
 
-# Flutter Cursor Template - Manual Setup
+# Flutter Cursor Template - Manual Setup (for private repo use SSH)
 cursor-setup() {
   echo "🚀 Setting up Flutter Cursor Template..."
   
-  # Try clone
-  if ! git clone https://github.com/adiomas/flutter-cursor-template.git .cursor-tmp 2>/dev/null; then
+  # Use SSH for private repo
+  if ! git clone git@github.com:adiomas/flutter-cursor-template.git .cursor-tmp 2>/dev/null; then
     echo "❌ Failed to clone template repo"
-    echo ""
-    echo "If repo is private, use SSH instead:"
-    echo "  git clone git@github.com:adiomas/flutter-cursor-template.git .cursor-tmp"
-    echo "  # Then manually: cp -r .cursor-tmp/{.cursor,.cursorrules,.cursorignore,docs} ."
-    echo "  # Cleanup: rm -rf .cursor-tmp"
+    echo "Make sure SSH key is configured: github.com/settings/keys"
     return 1
   fi
   
@@ -50,92 +46,75 @@ cursor-setup() {
 
 # Flutter Cursor Template - AI Setup (copies prompt to clipboard)
 cursor-ai-setup() {
-  local project_name="${1:-My Flutter App}"
-  local project_desc="${2:-Flutter application}"
+  local project_name="\${1:-My Flutter App}"
+  local project_desc="\${2:-Flutter application}"
   
-  # Check if repo is accessible
-  if ! curl -fsSL "https://raw.githubusercontent.com/adiomas/flutter-cursor-template/main/README.md" -o /dev/null 2>/dev/null; then
-    echo "⚠️  Repo appears to be private or inaccessible"
-    echo ""
-    echo "For private repos, use SSH clone instead:"
-    echo "  git clone git@github.com:adiomas/flutter-cursor-template.git .cursor-tmp"
-    echo ""
-    read -p "Continue anyway? (y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      return 1
-    fi
-  fi
-  
-  echo "Postavi Flutter projekt sa Cursor elite template-om:
+  local prompt="Postavi Flutter projekt sa Cursor elite template-om:
 
-Template: https://github.com/adiomas/flutter-cursor-template
-Project: $project_name
-Description: $project_desc
+Template: https://github.com/adiomas/flutter-cursor-template (private - use SSH)
+Project: \$project_name
+Description: \$project_desc
 
 Koraci:
-1. Clone: git clone https://github.com/adiomas/flutter-cursor-template.git .cursor-tmp
-   (Ako private, koristi: git clone git@github.com:adiomas/flutter-cursor-template.git .cursor-tmp)
+1. Clone: git clone git@github.com:adiomas/flutter-cursor-template.git .cursor-tmp
 2. Copy: cp -r .cursor-tmp/{.cursor,.cursorrules,.cursorignore,docs} .
-3. Update .cursor/notepads/project_context.md:
-   - Project name → \"$project_name\"
-   - Description → \"$project_desc\"
-   - Tech stack ako različit
-   - Existing features → []
+3. Update .cursor/notepads/project_context.md (name, description)
 4. Cleanup: rm -rf .cursor-tmp
-5. Pokaži summary što je postavljeno
+5. Summary
 
-@project_context.md @workflow_shortcuts.md
-
-Kreni!" | pbcopy
+@project_context.md @workflow_shortcuts.md"
+  
+  echo "\$prompt" | pbcopy
   echo "✅ Prompt copied to clipboard!"
   echo "📋 Paste in Cursor chat (⌘L → ⌘V → Enter)"
 }
 
-# Flutter Cursor Template - Update existing project
-# Downloads and runs the latest update script from GitHub
+# Flutter Cursor Template - Update existing project (for private repo)
 cursor-update() {
-  # Check if repo is private and needs authentication
-  local GITHUB_TOKEN="${GITHUB_PAT:-}"
-  local REPO_URL="https://github.com/adiomas/flutter-cursor-template.git"
-  local SCRIPT_URL="https://raw.githubusercontent.com/adiomas/flutter-cursor-template/main/update-template.sh"
-  local TEMP_SCRIPT="/tmp/cursor-update-$$.sh"
+  echo "🔄 Updating Flutter Cursor Elite Template..."
   
-  echo "🔄 Downloading latest update script..."
-  
-  # Try public access first
-  if ! curl -fsSL "$SCRIPT_URL" -o "$TEMP_SCRIPT" 2>/dev/null; then
-    # If failed, try with token (for private repos)
-    if [ -z "$GITHUB_TOKEN" ]; then
-      echo "❌ Failed to download update script"
-      echo ""
-      echo "If this is a private repo, set GITHUB_PAT:"
-      echo "  export GITHUB_PAT='your_token_here'"
-      echo ""
-      echo "Or make repo public on GitHub:"
-      echo "  Settings → Danger Zone → Change visibility → Public"
-      return 1
-    fi
-    
-    # Try with authentication
-    if ! curl -fsSL -H "Authorization: token $GITHUB_TOKEN" "$SCRIPT_URL" -o "$TEMP_SCRIPT"; then
-      echo "❌ Failed to download update script (even with token)"
-      echo "Check token permissions or repo URL"
-      return 1
-    fi
+  # Check if in Flutter project
+  if [ ! -f "pubspec.yaml" ]; then
+    echo "❌ Not a Flutter project (pubspec.yaml not found)"
+    return 1
   fi
   
-  # Make executable
-  chmod +x "$TEMP_SCRIPT"
+  # Backup project context
+  if [ -f .cursor/notepads/project_context.md ]; then
+    echo "📦 Backing up project_context.md..."
+    cp .cursor/notepads/project_context.md .cursor/notepads/project_context.md.backup
+  fi
   
-  # Run script
-  "$TEMP_SCRIPT"
-  local exit_code=$?
+  # Clone latest (use SSH for private repo)
+  echo "📥 Downloading latest template..."
+  if ! git clone --depth 1 git@github.com:adiomas/flutter-cursor-template.git .cursor-tmp 2>/dev/null; then
+    echo "❌ Failed to clone template"
+    echo "Make sure SSH key is configured: github.com/settings/keys"
+    return 1
+  fi
+  
+  # Update files
+  echo "📝 Updating..."
+  cp -r .cursor-tmp/.cursor/rules .cursor/ 2>/dev/null || true
+  cp -r .cursor-tmp/.cursor/tools .cursor/ 2>/dev/null || true
+  mkdir -p .cursor/notepads
+  cp .cursor-tmp/.cursor/notepads/workflow_shortcuts.md .cursor/notepads/ 2>/dev/null || true
+  cp .cursor-tmp/.cursor/notepads/context7_patterns.md .cursor/notepads/ 2>/dev/null || true
+  cp .cursor-tmp/.cursor/notepads/SETUP_PROMPT.md .cursor/notepads/ 2>/dev/null || true
+  cp .cursor-tmp/.cursorrules . 2>/dev/null || true
+  cp .cursor-tmp/.cursorignore . 2>/dev/null || true
+  cp -r .cursor-tmp/docs . 2>/dev/null || true
+  
+  # Restore project context
+  if [ -f .cursor/notepads/project_context.md.backup ]; then
+    cp .cursor/notepads/project_context.md.backup .cursor/notepads/project_context.md
+    rm .cursor/notepads/project_context.md.backup
+  fi
   
   # Cleanup
-  rm -f "$TEMP_SCRIPT"
+  rm -rf .cursor-tmp
   
-  return $exit_code
+  echo "✅ Template updated! Project context preserved."
 }
 
 EOF
