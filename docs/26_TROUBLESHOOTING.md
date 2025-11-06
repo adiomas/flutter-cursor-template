@@ -194,6 +194,39 @@ ls -la docs/
 
 **Prevention:** The update script now uses `--depth 1` for faster, cache-free clones.
 
+### cursor-update alias vs update-template.sh - which one to use?
+
+**Both work the same way now!**
+
+**`cursor-update` alias:**
+- Downloads latest `update-template.sh` from GitHub
+- Runs it directly
+- Always uses the newest version
+- ✅ Recommended for most users
+
+**`./update-template.sh` script:**
+- Uses local copy of the script
+- Useful for testing changes
+- Requires manual download first
+
+**How cursor-update works:**
+```bash
+# 1. Downloads latest script from GitHub
+curl https://raw.githubusercontent.com/.../update-template.sh
+
+# 2. Runs it
+/tmp/cursor-update.sh
+
+# 3. Cleans up
+rm /tmp/cursor-update.sh
+```
+
+**Benefits:**
+- ✅ Single source of truth (`update-template.sh`)
+- ✅ No sync issues between alias and script
+- ✅ Always latest version
+- ✅ No GitHub CDN delay (uses raw.githubusercontent.com)
+
 ---
 
 **Solutions to common problems!**
