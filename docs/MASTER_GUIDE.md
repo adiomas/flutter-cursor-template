@@ -287,6 +287,21 @@ Future<void> loadData() async {
 
 ## 🔄 Keeping Updated
 
+### Updating Template
+
+**Quick update:**
+```bash
+cursor-update
+```
+
+**For details:** See **[../UPDATE_SYSTEM.md](../UPDATE_SYSTEM.md)** for:
+- How the update system works
+- What gets updated vs preserved
+- Troubleshooting update issues
+- Alias vs script comparison
+
+### Keeping Current
+
 This framework evolves with Flutter best practices:
 - Review quarterly for Flutter SDK updates
 - Update dependencies following **[02_DEPENDENCIES_STRATEGY.md](02_DEPENDENCIES_STRATEGY.md)**
