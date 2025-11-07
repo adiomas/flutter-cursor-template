@@ -43,3 +43,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Cursor Template Symlinks (tracked via subtree)
+/.cursorrules
+/.cursorignore
+/.cursor
+/docs
+/setup-aliases.sh
+/update-template.sh
+
+# Track subtree directory
+!/cursor-template/
