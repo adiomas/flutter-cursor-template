@@ -55,5 +55,5 @@ app.*.map.json
 # Cursor template backups
 .cursor-template-backup.*
 
-# Track subtree directory
-!/cursor-template/
+# Cursor template directory (subtree - not needed in repo)
+/cursor-template/
