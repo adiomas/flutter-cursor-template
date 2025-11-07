@@ -43,12 +43,11 @@ if [ -z "$COMMIT_MSG" ]; then
     fi
 fi
 
-# Check for uncommitted changes in subtree
+# Check for uncommitted changes in subtree (from project root)
 echo "🔍 Checking for changes in $SUBTREE_DIR..."
-cd "$SUBTREE_DIR"
 
-# Check if there are any changes
-if git diff --quiet && git diff --cached --quiet; then
+# Check if there are any changes in subtree directory
+if git diff --quiet HEAD -- "$SUBTREE_DIR" && git diff --cached --quiet HEAD -- "$SUBTREE_DIR"; then
     echo "⚠️  No changes detected in $SUBTREE_DIR"
     echo ""
     echo "   Make changes to files in $SUBTREE_DIR/ first, then run:"
@@ -56,10 +55,13 @@ if git diff --quiet && git diff --cached --quiet; then
     exit 0
 fi
 
-# Show what will be pushed
+# Show what will be pushed (only subtree changes)
 echo ""
 echo "📋 Changes to be pushed:"
-git status --short
+git diff --name-status HEAD -- "$SUBTREE_DIR" | head -20
+if [ $(git diff --name-status HEAD -- "$SUBTREE_DIR" | wc -l) -gt 20 ]; then
+    echo "   ... (and more)"
+fi
 echo ""
 
 # Confirm push
@@ -69,9 +71,6 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo "   Cancelled."
     exit 0
 fi
-
-# Go back to project root
-cd ..
 
 # Stage subtree changes
 echo "📦 Staging changes..."
