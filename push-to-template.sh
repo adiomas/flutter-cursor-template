@@ -43,11 +43,13 @@ if [ -z "$COMMIT_MSG" ]; then
     fi
 fi
 
-# Check for uncommitted changes in subtree (from project root)
+# Check for ANY changes in subtree (modified, untracked, staged)
 echo "🔍 Checking for changes in $SUBTREE_DIR..."
 
-# Check if there are any changes in subtree directory
-if git diff --quiet HEAD -- "$SUBTREE_DIR" && git diff --cached --quiet HEAD -- "$SUBTREE_DIR"; then
+# Check if there are any changes in subtree directory (including untracked)
+if git diff --quiet HEAD -- "$SUBTREE_DIR" && \
+   git diff --cached --quiet HEAD -- "$SUBTREE_DIR" && \
+   [ -z "$(git status --porcelain "$SUBTREE_DIR" 2>/dev/null)" ]; then
     echo "⚠️  No changes detected in $SUBTREE_DIR"
     echo ""
     echo "   Make changes to files in $SUBTREE_DIR/ first, then run:"
