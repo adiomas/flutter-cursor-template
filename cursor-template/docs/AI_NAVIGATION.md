@@ -20,15 +20,16 @@
 **Auto-read (in this order):**
 ```
 1. docs/07_FEATURE_TEMPLATE.md
-2. docs/templates/repository_template.dart
-3. docs/templates/notifier_template.dart
-4. docs/templates/model_template.dart
-5. docs/templates/entity_template.dart
-6. docs/templates/page_template.dart
-7. docs/04_CLEAN_ARCHITECTURE.md
-8. docs/05_STATE_MANAGEMENT.md
-9. docs/06_ERROR_HANDLING.md
-10. docs/11_DESIGN_SYSTEM.md
+2. docs/29_PAGE_WIDGET_BEST_PRACTICES.md ⭐ CRITICAL
+3. docs/templates/repository_template.dart
+4. docs/templates/notifier_template.dart
+5. docs/templates/model_template.dart
+6. docs/templates/entity_template.dart
+7. docs/templates/page_template.dart
+8. docs/04_CLEAN_ARCHITECTURE.md
+9. docs/05_STATE_MANAGEMENT.md
+10. docs/06_ERROR_HANDLING.md
+11. docs/11_DESIGN_SYSTEM.md
 ```
 
 **Example:**
@@ -368,6 +369,33 @@ These are **non-negotiable** and should be applied automatically:
 - RepaintBoundary
 - Image caching
 
+### Refactoring Detection
+
+**Trigger Keywords:** `refaktoriraj`, `refactor`, `poboljšaj`, `cleanup`, `extract`, `refactoriraj`
+
+**Auto-read:**
+```
+1. docs/30_REFACTORING_GUIDE.md ⭐ PRIMARY
+2. docs/29_PAGE_WIDGET_BEST_PRACTICES.md
+3. docs/04_CLEAN_ARCHITECTURE.md
+4. docs/25_CODE_PATTERNS.md
+5. Target file(s) to refactor
+```
+
+**AI Process:**
+1. Analyzes current code thoroughly
+2. Identifies violations (duplication, large methods, business logic in UI)
+3. Creates refactoring plan
+4. Extracts services/widgets/helpers incrementally
+5. Removes duplication
+6. Tests after each step
+
+**Example:**
+- User: "Refaktoriraj profile_page.dart"
+- AI: [Auto-reads refactoring guide] → Analyzes → Creates plan → Refactors step-by-step
+
+---
+
 ### Example 3: Implicit Architecture Issue
 
 **User:** "Refaktoriraj Users feature, previše je spagetti kod"
@@ -378,12 +406,19 @@ These are **non-negotiable** and should be applied automatically:
 - Goal: Clean architecture
 
 **AI Auto-reads:**
+- `30_REFACTORING_GUIDE.md` ⭐ PRIMARY
+- `29_PAGE_WIDGET_BEST_PRACTICES.md`
 - `04_CLEAN_ARCHITECTURE.md`
 - `07_FEATURE_TEMPLATE.md`
-- `templates/*.dart`
+- `25_CODE_PATTERNS.md`
+- Target file(s) to refactor
 
-**AI Implements:**
-- Splits into layers
+**AI Process:**
+1. Analyzes current code thoroughly
+2. Creates refactoring plan
+3. Extracts services/widgets/helpers
+4. Removes duplication
+5. Tests after each step
 - Creates proper structure
 - Migrates logic
 
@@ -397,7 +432,7 @@ These are **non-negotiable** and should be applied automatically:
 │   ├── QUICK_START.md            ← User guide
 │   └── AI_NAVIGATION.md          ← This file (AI guide)
 │
-├── 📖 GUIDES (00-27)
+├── 📖 GUIDES (00-30)
 │   ├── 00_PHILOSOPHY.md          ← Core principles
 │   ├── 01-03: Project Setup
 │   ├── 04-06: Architecture Core
@@ -405,7 +440,9 @@ These are **non-negotiable** and should be applied automatically:
 │   ├── 08-13: Development
 │   ├── 14-17: Quality
 │   ├── 18-24: Deployment
-│   └── 25-27: Maintenance
+│   ├── 25-27: Maintenance
+│   ├── 29: Page Widget Best Practices ⭐ CRITICAL
+│   └── 30: Refactoring Guide ⭐
 │
 ├── 📄 TEMPLATES
 │   ├── repository_template.dart  ← Use for data layer

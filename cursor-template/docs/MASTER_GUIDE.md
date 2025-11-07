@@ -88,6 +88,12 @@ Your daily development workflow and patterns.
 - **[09_DATA_LAYER.md](09_DATA_LAYER.md)** - Repository patterns, Supabase integration, caching strategies
 - **[10_UI_COMPONENT_LIBRARY.md](10_UI_COMPONENT_LIBRARY.md)** - Reusable widgets, component composition, theming
 
+### Code Quality & Refactoring (29-30)
+Ensure code quality and maintainability.
+
+- **[29_PAGE_WIDGET_BEST_PRACTICES.md](29_PAGE_WIDGET_BEST_PRACTICES.md)** ⭐ **CRITICAL** - Page widget standards, anti-patterns, extraction guidelines
+- **[30_REFACTORING_GUIDE.md](30_REFACTORING_GUIDE.md)** - Step-by-step refactoring process, patterns, checklists
+
 ### Design System (11-13)
 Create beautiful, consistent user interfaces.
 
@@ -122,12 +128,15 @@ Ship your app and maintain excellence post-launch.
 - **[23_STORE_SUBMISSION.md](23_STORE_SUBMISSION.md)** - Submission checklists, review guidelines, common rejections
 - **[24_POST_LAUNCH.md](24_POST_LAUNCH.md)** - Monitoring strategy, user feedback, update cadence
 
-### Reference Materials (25-27)
+### Reference Materials (25-30)
 Quick reference and advanced integrations.
 
 - **[25_CODE_PATTERNS.md](25_CODE_PATTERNS.md)** - Common patterns catalog, anti-patterns to avoid, refactoring recipes
 - **[26_TROUBLESHOOTING.md](26_TROUBLESHOOTING.md)** - Common issues & solutions, debug techniques, platform quirks
 - **[27_MCP_INTEGRATION.md](27_MCP_INTEGRATION.md)** - MCP Context7 usage, MCP Supabase workflow, tool integration
+- **[28_LOGGING_AND_DEBUGGING.md](28_LOGGING_AND_DEBUGGING.md)** - Logging strategies, debug tools, error tracking
+- **[29_PAGE_WIDGET_BEST_PRACTICES.md](29_PAGE_WIDGET_BEST_PRACTICES.md)** ⭐ - Page widget standards, anti-patterns, extraction guidelines
+- **[30_REFACTORING_GUIDE.md](30_REFACTORING_GUIDE.md)** - Step-by-step refactoring process, patterns, checklists
 
 ## 🗂️ Supporting Resources
 
