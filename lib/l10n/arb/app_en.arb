@@ -211,6 +211,16 @@
   "@authOAuthCancelled": {
     "description": "Message when user cancels OAuth sign in"
   },
+  "authOAuthNotConfigured": "{provider} Sign In is not configured. Please configure {provider} Client IDs in Supabase dashboard.",
+  "@authOAuthNotConfigured": {
+    "description": "Error message when OAuth provider is not configured",
+    "placeholders": {
+      "provider": {
+        "type": "String",
+        "example": "Google"
+      }
+    }
+  },
   
   "dashboardProjects": "Projects",
   "dashboardFavorites": "Favorites",
@@ -224,6 +234,14 @@
   "dashboardAITemplates": "AI Templates",
   "dashboardAITemplatesSubtitle": "Explore AI editing templates",
   "dashboardRecentActivity": "Recent Activity",
+  "dashboardLoggerDemo": "🐛 Logger Demo",
+  "@dashboardLoggerDemo": {
+    "description": "Debug action button title for logger demo"
+  },
+  "dashboardLoggerDemoSubtitle": "Test logging system & shake-to-open console",
+  "@dashboardLoggerDemoSubtitle": {
+    "description": "Debug action button subtitle for logger demo"
+  },
   
   "dateToday": "Today",
   "dateYesterday": "Yesterday",
@@ -473,6 +491,22 @@
   "profileMemberSince": "Member since",
   "@profileMemberSince": {
     "description": "Label for member since date in profile"
+  },
+  "errorImagePickerPermission": "Permission denied. Please grant camera/photo access in settings.",
+  "@errorImagePickerPermission": {
+    "description": "Error message when image picker permission is denied"
+  },
+  "errorImagePickerFileNotFound": "Selected image file not found. Please try again.",
+  "@errorImagePickerFileNotFound": {
+    "description": "Error message when selected image file cannot be found"
+  },
+  "errorImagePickerGeneric": "Failed to pick image. Please try again.",
+  "@errorImagePickerGeneric": {
+    "description": "Generic error message for image picker failures"
+  },
+  "errorPlatformError": "Platform error occurred. Please try again.",
+  "@errorPlatformError": {
+    "description": "Error message for platform-specific errors"
   },
   
   "navHome": "Home",

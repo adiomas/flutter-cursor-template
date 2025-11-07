@@ -9,6 +9,8 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_text_styles.dart';
 import '../../../auth/domain/notifiers/auth_notifier.dart';
 import '../../../debug/presentation/pages/logger_demo_page.dart';
+import '../widgets/dashboard_action_button.dart';
+import '../widgets/dashboard_stat_card.dart';
 
 class DashboardPage extends HookConsumerWidget {
   static const routeName = '/home';
@@ -27,8 +29,8 @@ class DashboardPage extends HookConsumerWidget {
         elevation: 0,
         title: Text(
           context.l10n.appTitle,
-          style: AppTextStyles.titleLarge.copyWith(
-            color: AppColors.primary,
+          style: context.textStyles.titleLarge.copyWith(
+            color: context.appColors.primary,
           ),
         ),
         actions: [
@@ -49,14 +51,16 @@ class DashboardPage extends HookConsumerWidget {
               // Welcome Section
               Text(
                 context.l10n.authWelcomeBackUser,
-                style: AppTextStyles.bodyLarge.copyWith(
+                style: context.textStyles.bodyLarge.copyWith(
                   color: context.appColors.textSecondary,
                 ),
               ),
               spacing8,
               Text(
                 currentUser?.displayNameOrEmail ?? context.l10n.authUser,
-                style: AppTextStyles.displayMedium,
+                style: context.textStyles.displayMedium.copyWith(
+                  color: context.appColors.textPrimary,
+                ),
               ),
               spacing32,
 
@@ -64,20 +68,20 @@ class DashboardPage extends HookConsumerWidget {
               Row(
                 children: [
                   Expanded(
-                    child: _StatCard(
+                    child: DashboardStatCard(
                       icon: Icons.image_outlined,
                       title: context.l10n.dashboardProjects,
                       value: '0',
-                      color: AppColors.primary,
+                      color: context.appColors.primary,
                     ),
                   ),
                   spacingH16,
                   Expanded(
-                    child: _StatCard(
+                    child: DashboardStatCard(
                       icon: Icons.favorite_outline,
                       title: context.l10n.dashboardFavorites,
                       value: '0',
-                      color: AppColors.error,
+                      color: context.appColors.error,
                     ),
                   ),
                 ],
@@ -86,20 +90,20 @@ class DashboardPage extends HookConsumerWidget {
               Row(
                 children: [
                   Expanded(
-                    child: _StatCard(
+                    child: DashboardStatCard(
                       icon: Icons.auto_awesome_outlined,
                       title: context.l10n.dashboardAIEdits,
                       value: '0',
-                      color: AppColors.secondary,
+                      color: context.appColors.secondary,
                     ),
                   ),
                   spacingH16,
                   Expanded(
-                    child: _StatCard(
+                    child: DashboardStatCard(
                       icon: Icons.cloud_upload_outlined,
                       title: context.l10n.dashboardUploads,
                       value: '0',
-                      color: AppColors.success,
+                      color: context.appColors.success,
                     ),
                   ),
                 ],
@@ -109,10 +113,12 @@ class DashboardPage extends HookConsumerWidget {
               // Quick Actions
               Text(
                 context.l10n.dashboardQuickActions,
-                style: AppTextStyles.titleMedium,
+                style: context.textStyles.titleMedium.copyWith(
+                  color: context.appColors.textPrimary,
+                ),
               ),
               spacing16,
-              _ActionButton(
+              DashboardActionButton(
                 icon: Icons.add_photo_alternate,
                 title: context.l10n.dashboardUploadPhoto,
                 subtitle: context.l10n.dashboardUploadPhotoSubtitle,
@@ -121,7 +127,7 @@ class DashboardPage extends HookConsumerWidget {
                 },
               ),
               spacing12,
-              _ActionButton(
+              DashboardActionButton(
                 icon: Icons.folder_outlined,
                 title: context.l10n.dashboardBrowseProjects,
                 subtitle: context.l10n.dashboardBrowseProjectsSubtitle,
@@ -130,7 +136,7 @@ class DashboardPage extends HookConsumerWidget {
                 },
               ),
               spacing12,
-              _ActionButton(
+              DashboardActionButton(
                 icon: Icons.auto_fix_high,
                 title: context.l10n.dashboardAITemplates,
                 subtitle: context.l10n.dashboardAITemplatesSubtitle,
@@ -142,10 +148,10 @@ class DashboardPage extends HookConsumerWidget {
               // Debug Actions (only in dev/staging)
               if (EnvInfo.isDevelopment || EnvInfo.isStaging) ...[
                 spacing12,
-                _ActionButton(
+                DashboardActionButton(
                   icon: Icons.bug_report,
-                  title: '🐛 Logger Demo',
-                  subtitle: 'Test logging system & shake-to-open console',
+                  title: context.l10n.dashboardLoggerDemo,
+                  subtitle: context.l10n.dashboardLoggerDemoSubtitle,
                   onTap: () {
                     context.push(LoggerDemoPage.routeName);
                   },
@@ -157,7 +163,9 @@ class DashboardPage extends HookConsumerWidget {
               // Recent Activity
               Text(
                 context.l10n.dashboardRecentActivity,
-                style: AppTextStyles.titleMedium,
+                style: context.textStyles.titleMedium.copyWith(
+                  color: context.appColors.textPrimary,
+                ),
               ),
               spacing16,
               Container(
@@ -177,14 +185,16 @@ class DashboardPage extends HookConsumerWidget {
                     spacing12,
                     Text(
                       context.l10n.emptyActivityTitle,
-                      style: AppTextStyles.bodyLarge.copyWith(
+                      style: context.textStyles.bodyLarge.copyWith(
                         color: context.appColors.textSecondary,
                       ),
                     ),
                     spacing8,
                     Text(
                       context.l10n.emptyActivityMessage,
-                      style: AppTextStyles.bodySmall,
+                      style: context.textStyles.bodySmall.copyWith(
+                        color: context.appColors.textSecondary,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -192,119 +202,6 @@ class DashboardPage extends HookConsumerWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String value;
-  final Color color;
-
-  const _StatCard({
-    required this.icon,
-    required this.title,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: paddingAll16,
-      decoration: BoxDecoration(
-        color: context.appColors.cardBackground,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.appColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: color, size: 28),
-          spacing12,
-          Text(
-            value,
-            style: AppTextStyles.displayMedium.copyWith(color: color),
-          ),
-          spacing4,
-          Text(
-            title,
-            style: AppTextStyles.bodySmall.copyWith(
-              color: context.appColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _ActionButton({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: paddingAll16,
-        decoration: BoxDecoration(
-          color: context.appColors.cardBackground,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: context.appColors.border),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: context.appColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: context.appColors.primary, size: 24),
-            ),
-            spacingH16,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: context.appColors.textPrimary,
-                    ),
-                  ),
-                  spacing4,
-                  Text(
-                    subtitle,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: context.appColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: context.appColors.textSecondary,
-            ),
-          ],
         ),
       ),
     );

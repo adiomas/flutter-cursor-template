@@ -1,18 +1,16 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:q_architecture/q_architecture.dart';
 
+import '../../../../common/data/services/image_picker_service.dart';
 import '../../../../common/presentation/extensions/localization_extension.dart';
 import '../../../../common/presentation/spacing.dart';
-import '../../../../common/presentation/utils/bottom_sheet_helper.dart';
+import '../../../../common/presentation/utils/snackbar_helper.dart';
 import '../../../../common/presentation/widgets/error_view.dart';
-import '../../../../common/utils/logger/app_logger.dart';
+import '../../../../common/presentation/widgets/image_source_bottom_sheet.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_text_styles.dart';
 import '../../../auth/domain/notifiers/auth_notifier.dart';
@@ -95,53 +93,31 @@ class ProfilePage extends HookConsumerWidget {
       ),
       body: SafeArea(
         child: profileState.maybeWhen(
-          data: (user) => _ProfileContent(
+          data: (user) => _buildProfileContent(
+            context: context,
+            ref: ref,
             user: user,
             displayNameController: displayNameController,
             isEditing: isEditing.value,
             isLoading: false,
-            ref: ref,
-            onSave: () async {
-              final success = await ref
-                  .read(profileNotifierProvider.notifier)
-                  .updateDisplayName(displayNameController.text);
-              if (success && context.mounted) {
-                isEditing.value = false;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(context.l10n.successUpdated),
-                    backgroundColor: context.appColors.success,
-                  ),
-                );
-              }
-            },
-            onAvatarTap: () => _showImagePicker(context, ref),
+            onSave: () =>
+                _handleSave(context, ref, displayNameController, isEditing),
+            onAvatarTap: () => _handleAvatarTap(context, ref),
           ),
           loading: () {
             // Show profile content with loading state on avatar
             final currentUser = ref.watch(currentUserProvider);
             if (currentUser != null) {
-              return _ProfileContent(
+              return _buildProfileContent(
+                context: context,
+                ref: ref,
                 user: currentUser,
                 displayNameController: displayNameController,
                 isEditing: isEditing.value,
                 isLoading: true,
-                ref: ref,
-                onSave: () async {
-                  final success = await ref
-                      .read(profileNotifierProvider.notifier)
-                      .updateDisplayName(displayNameController.text);
-                  if (success && context.mounted) {
-                    isEditing.value = false;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(context.l10n.successUpdated),
-                        backgroundColor: context.appColors.success,
-                      ),
-                    );
-                  }
-                },
-                onAvatarTap: () => _showImagePicker(context, ref),
+                onSave: () =>
+                    _handleSave(context, ref, displayNameController, isEditing),
+                onAvatarTap: () => _handleAvatarTap(context, ref),
               );
             }
             // Fallback if no current user
@@ -157,27 +133,16 @@ class ProfilePage extends HookConsumerWidget {
             // Initial state - try to show current user if available
             final currentUser = ref.watch(currentUserProvider);
             if (currentUser != null) {
-              return _ProfileContent(
+              return _buildProfileContent(
+                context: context,
+                ref: ref,
                 user: currentUser,
                 displayNameController: displayNameController,
                 isEditing: isEditing.value,
                 isLoading: false,
-                ref: ref,
-                onSave: () async {
-                  final success = await ref
-                      .read(profileNotifierProvider.notifier)
-                      .updateDisplayName(displayNameController.text);
-                  if (success && context.mounted) {
-                    isEditing.value = false;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(context.l10n.successUpdated),
-                        backgroundColor: context.appColors.success,
-                      ),
-                    );
-                  }
-                },
-                onAvatarTap: () => _showImagePicker(context, ref),
+                onSave: () =>
+                    _handleSave(context, ref, displayNameController, isEditing),
+                onAvatarTap: () => _handleAvatarTap(context, ref),
               );
             }
             return const Center(child: CircularProgressIndicator());
@@ -187,223 +152,84 @@ class ProfilePage extends HookConsumerWidget {
     );
   }
 
-  Future<void> _showImagePicker(BuildContext context, WidgetRef ref) async {
-    final logger = AppLogger.instance;
-    logger.debug('📷 Opening image picker bottom sheet...');
+  /// Handles saving display name
+  Future<void> _handleSave(
+    BuildContext context,
+    WidgetRef ref,
+    TextEditingController displayNameController,
+    ValueNotifier<bool> isEditing,
+  ) async {
+    final success = await ref
+        .read(profileNotifierProvider.notifier)
+        .updateDisplayName(displayNameController.text);
 
-    final picker = ImagePicker();
-
-    ImageSource? source;
-    try {
-      logger.debug('📷 Showing modal bottom sheet...');
-      source = await BottomSheetHelper.show<ImageSource>(
-        context: context,
-        backgroundColor: context.appColors.contentBackground,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        builder: (context) => SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: paddingAll16,
-                child: Text(
-                  context.l10n.profileSelectAvatarSource,
-                  style: context.textStyles.titleMedium,
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: Text(context.l10n.profileSelectFromGallery),
-                onTap: () {
-                  logger.debug('📷 User selected: Gallery');
-                  Navigator.pop(context, ImageSource.gallery);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: Text(context.l10n.profileTakePhoto),
-                onTap: () {
-                  logger.debug('📷 User selected: Camera');
-                  Navigator.pop(context, ImageSource.camera);
-                },
-              ),
-              spacing16,
-            ],
-          ),
-        ),
-      );
-      logger.debug(
-          '📷 Bottom sheet closed, result: ${source != null ? source.toString() : "null"}');
-    } catch (e, stackTrace) {
-      logger.error(
-        '❌ Error showing bottom sheet',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error opening picker: ${e.toString()}'),
-            backgroundColor: context.appColors.error,
-          ),
-        );
-      }
-      return;
+    if (success && context.mounted) {
+      isEditing.value = false;
+      SnackbarHelper.showSuccess(context, context.l10n.successUpdated);
     }
+  }
 
-    if (source == null) {
-      logger.debug('📷 User cancelled image source selection');
-      return;
-    }
+  /// Handles avatar tap - shows image source selection and uploads selected image
+  Future<void> _handleAvatarTap(BuildContext context, WidgetRef ref) async {
+    // Show image source selection bottom sheet
+    final source = await ImageSourceBottomSheet.show(context);
+    if (source == null) return;
 
-    logger.info(
-        '📷 Image source selected: ${source == ImageSource.gallery ? "Gallery" : "Camera"}');
+    // Pick image using service
+    final imagePickerService = ref.read(imagePickerServiceProvider);
+    final result = await imagePickerService.pickImage(source: source);
 
-    try {
-      logger.debug('📷 About to call picker.pickImage()...');
-      logger.debug(
-          '📷 Image picker settings: maxWidth=1024, maxHeight=1024, quality=85');
-      logger.debug(
-          '📷 Source type: $source (${source == ImageSource.gallery ? "Gallery" : "Camera"})');
+    result.fold(
+      (failure) {
+        // Don't show error for user cancellation
+        if (failure.error
+                ?.toString()
+                .toLowerCase()
+                .contains('user_cancelled') !=
+            true) {
+          SnackbarHelper.showError(context, failure);
+        }
+      },
+      (file) async {
+        // Upload avatar
+        final success =
+            await ref.read(profileNotifierProvider.notifier).uploadAvatar(file);
 
-      // Wrap pickImage in additional try-catch to catch platform errors
-      XFile? image;
-      try {
-        logger.debug('📷 Calling picker.pickImage() now...');
-        image = await picker.pickImage(
-          source: source,
-          maxWidth: 1024,
-          maxHeight: 1024,
-          imageQuality: 85,
-        );
-        logger.debug(
-            '📷 pickImage() call completed, result: ${image != null ? "success" : "null"}');
-      } catch (pickError, pickStack) {
-        logger.error(
-          '❌ Error in picker.pickImage() call',
-          error: pickError,
-          stackTrace: pickStack,
-        );
-        logger.debug('📷 Pick error type: ${pickError.runtimeType}');
-        logger.debug('📷 Pick error toString: ${pickError.toString()}');
-
-        // Re-throw to be caught by outer catch
-        rethrow;
-      }
-
-      if (image == null) {
-        logger
-            .warning('📷 Image picker returned null - user may have cancelled');
-        return;
-      }
-
-      logger.info('✅ Image picked successfully: ${image.path}');
-      logger.debug(
-          '📷 Image details: name=${image.name}, size=${image.length} bytes');
-
-      if (!context.mounted) {
-        logger.warning('📷 Context not mounted, skipping upload');
-        return;
-      }
-
-      final file = File(image.path);
-
-      // Check if file exists
-      if (!await file.exists()) {
-        logger.error(
-          '📷 Selected image file does not exist',
-          error: 'File path: ${image.path}',
-        );
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Image file not found'),
-              backgroundColor: context.appColors.error,
-            ),
+        if (success && context.mounted) {
+          SnackbarHelper.showSuccess(
+            context,
+            context.l10n.profileAvatarUpdated,
+          );
+        } else if (context.mounted) {
+          SnackbarHelper.showError(
+            context,
+            Failure.generic(error: context.l10n.errorGeneric),
           );
         }
-        return;
-      }
+      },
+    );
+  }
 
-      final fileSize = await file.length();
-      logger.debug(
-          '📷 File size: $fileSize bytes (${(fileSize / 1024).toStringAsFixed(2)} KB)');
-
-      logger.info('📤 Starting avatar upload...');
-      final success =
-          await ref.read(profileNotifierProvider.notifier).uploadAvatar(file);
-
-      if (success) {
-        logger.info('✅ Avatar upload completed successfully');
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(context.l10n.profileAvatarUpdated),
-              backgroundColor: context.appColors.success,
-            ),
-          );
-        }
-      } else {
-        logger.error('❌ Avatar upload failed - notifier returned false');
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(context.l10n.errorGeneric),
-              backgroundColor: context.appColors.error,
-            ),
-          );
-        }
-      }
-    } on PlatformException catch (e, stackTrace) {
-      logger.error(
-        '❌ PlatformException during image picker/upload process',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      logger.debug('📷 PlatformException code: ${e.code}');
-      logger.debug('📷 PlatformException message: ${e.message}');
-      logger.debug('📷 PlatformException details: ${e.details}');
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Platform Error: ${e.message ?? e.code}'),
-            backgroundColor: context.appColors.error,
-            duration: const Duration(seconds: 5),
-          ),
-        );
-      }
-    } catch (e, stackTrace) {
-      logger.error(
-        '❌ Error during image picker/upload process',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      logger.debug('📷 Error type: ${e.runtimeType}');
-      logger.debug('📷 Error message: ${e.toString()}');
-      logger.debug('📷 Error runtimeType: ${e.runtimeType}');
-
-      // Check for specific error types
-      if (e.toString().contains('Permission') ||
-          e.toString().contains('permission') ||
-          e.toString().contains('denied')) {
-        logger.error(
-          '📷 Permission error detected - check Info.plist (iOS) or AndroidManifest.xml (Android)',
-        );
-      }
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: context.appColors.error,
-            duration: const Duration(seconds: 5),
-          ),
-        );
-      }
-    }
+  /// Builds profile content widget
+  Widget _buildProfileContent({
+    required BuildContext context,
+    required WidgetRef ref,
+    required dynamic user,
+    required TextEditingController displayNameController,
+    required bool isEditing,
+    required bool isLoading,
+    required VoidCallback onSave,
+    required VoidCallback onAvatarTap,
+  }) {
+    return _ProfileContent(
+      user: user,
+      displayNameController: displayNameController,
+      isEditing: isEditing,
+      isLoading: isLoading,
+      ref: ref,
+      onSave: onSave,
+      onAvatarTap: onAvatarTap,
+    );
   }
 }
 

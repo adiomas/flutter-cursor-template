@@ -736,6 +736,12 @@ abstract class AppLocalizations {
   /// **'Sign in was cancelled'**
   String get authOAuthCancelled;
 
+  /// Error message when OAuth provider is not configured
+  ///
+  /// In en, this message translates to:
+  /// **'{provider} Sign In is not configured. Please configure {provider} Client IDs in Supabase dashboard.'**
+  String authOAuthNotConfigured(String provider);
+
   /// No description provided for @dashboardProjects.
   ///
   /// In en, this message translates to:
@@ -807,6 +813,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recent Activity'**
   String get dashboardRecentActivity;
+
+  /// Debug action button title for logger demo
+  ///
+  /// In en, this message translates to:
+  /// **'🐛 Logger Demo'**
+  String get dashboardLoggerDemo;
+
+  /// Debug action button subtitle for logger demo
+  ///
+  /// In en, this message translates to:
+  /// **'Test logging system & shake-to-open console'**
+  String get dashboardLoggerDemoSubtitle;
 
   /// No description provided for @dateToday.
   ///
@@ -1125,6 +1143,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Member since'**
   String get profileMemberSince;
+
+  /// Error message when image picker permission is denied
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied. Please grant camera/photo access in settings.'**
+  String get errorImagePickerPermission;
+
+  /// Error message when selected image file cannot be found
+  ///
+  /// In en, this message translates to:
+  /// **'Selected image file not found. Please try again.'**
+  String get errorImagePickerFileNotFound;
+
+  /// Generic error message for image picker failures
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to pick image. Please try again.'**
+  String get errorImagePickerGeneric;
+
+  /// Error message for platform-specific errors
+  ///
+  /// In en, this message translates to:
+  /// **'Platform error occurred. Please try again.'**
+  String get errorPlatformError;
 
   /// Bottom navigation label for home tab
   ///

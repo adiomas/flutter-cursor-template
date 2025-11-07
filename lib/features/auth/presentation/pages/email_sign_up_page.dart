@@ -10,6 +10,7 @@ import '../../../../common/presentation/widgets/animated_app_icon.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_text_styles.dart';
 import '../../domain/notifiers/auth_notifier.dart';
+import '../widgets/auth_navigation_link.dart';
 
 class EmailSignUpPage extends HookConsumerWidget {
   static const routeName = '/register/email';
@@ -268,24 +269,10 @@ class EmailSignUpPage extends HookConsumerWidget {
                 spacing16,
 
                 // Login Link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      context.l10n.authAlreadyHaveAccount,
-                      style: context.textStyles.bodyMedium,
-                    ),
-                    TextButton(
-                      onPressed: () => context.go('/login'),
-                      child: Text(
-                        context.l10n.authSignIn,
-                        style: context.textStyles.bodyMedium.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
+                AuthNavigationLink(
+                  questionText: context.l10n.authAlreadyHaveAccount,
+                  linkText: context.l10n.authSignIn,
+                  onTap: () => context.go('/login'),
                 ),
               ],
             ),

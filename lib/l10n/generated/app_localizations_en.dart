@@ -345,6 +345,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authOAuthCancelled => 'Sign in was cancelled';
 
   @override
+  String authOAuthNotConfigured(String provider) {
+    return '$provider Sign In is not configured. Please configure $provider Client IDs in Supabase dashboard.';
+  }
+
+  @override
   String get dashboardProjects => 'Projects';
 
   @override
@@ -379,6 +384,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardRecentActivity => 'Recent Activity';
+
+  @override
+  String get dashboardLoggerDemo => '🐛 Logger Demo';
+
+  @override
+  String get dashboardLoggerDemoSubtitle =>
+      'Test logging system & shake-to-open console';
 
   @override
   String get dateToday => 'Today';
@@ -610,6 +622,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileMemberSince => 'Member since';
+
+  @override
+  String get errorImagePickerPermission =>
+      'Permission denied. Please grant camera/photo access in settings.';
+
+  @override
+  String get errorImagePickerFileNotFound =>
+      'Selected image file not found. Please try again.';
+
+  @override
+  String get errorImagePickerGeneric =>
+      'Failed to pick image. Please try again.';
+
+  @override
+  String get errorPlatformError => 'Platform error occurred. Please try again.';
 
   @override
   String get navHome => 'Home';
