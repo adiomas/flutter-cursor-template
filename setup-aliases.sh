@@ -51,14 +51,14 @@ cursor-ai-setup() {
   
   local prompt="Postavi Flutter projekt sa Cursor elite template-om:
 
-Template: https://github.com/adiomas/flutter-cursor-template (private - use SSH)
+Template: https://github.com/adiomas/flutter-cursor-template private - use SSH
 Project: \$project_name
 Description: \$project_desc
 
 Koraci:
 1. Clone: git clone git@github.com:adiomas/flutter-cursor-template.git .cursor-tmp
 2. Copy: cp -r .cursor-tmp/{.cursor,.cursorrules,.cursorignore,docs} .
-3. Update .cursor/notepads/project_context.md (name, description)
+3. Update .cursor/notepads/project_context.md name, description
 4. Cleanup: rm -rf .cursor-tmp
 5. Summary
 
@@ -66,7 +66,7 @@ Koraci:
   
   echo "\$prompt" | pbcopy
   echo "✅ Prompt copied to clipboard!"
-  echo "📋 Paste in Cursor chat (⌘L → ⌘V → Enter)"
+  echo "📋 Paste in Cursor chat ⌘L → ⌘V → Enter"
 }
 
 # Flutter Cursor Template - Update existing project (for private repo)
@@ -75,7 +75,7 @@ cursor-update() {
   
   # Check if in Flutter project
   if [ ! -f "pubspec.yaml" ]; then
-    echo "❌ Not a Flutter project (pubspec.yaml not found)"
+    echo "❌ Not a Flutter project pubspec.yaml not found"
     return 1
   fi
   
@@ -225,7 +225,7 @@ template-status() {
   if ! git diff --quiet HEAD template-upstream/main -- cursor-template/ 2>/dev/null; then
     echo ""
     echo "📥 Updates available from template:"
-    git log --oneline HEAD..template-upstream/main --prefix="cursor-template/" | head -5
+    git log --oneline HEAD..template-upstream/main | head -5
     echo ""
     echo "💡 Pull updates with: template-pull"
   else
