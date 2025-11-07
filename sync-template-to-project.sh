@@ -29,6 +29,17 @@ if [ ! -d ".git" ]; then
     echo "✅ Git repository initialized"
 fi
 
+# Check if repo has any commits (required for subtree)
+if ! git rev-parse --verify HEAD >/dev/null 2>&1; then
+    echo "📝 Creating initial commit (required for subtree)..."
+    git add .
+    git commit -m "chore: initial commit" || {
+        # If nothing to commit, create empty commit
+        git commit --allow-empty -m "chore: initial commit"
+    }
+    echo "✅ Initial commit created"
+fi
+
 # Check if subtree already exists
 if [ -d "$SUBTREE_DIR" ]; then
     echo "⚠️  Subtree directory '$SUBTREE_DIR' already exists"

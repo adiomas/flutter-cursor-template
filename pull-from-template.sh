@@ -48,7 +48,7 @@ git fetch "$REMOTE_NAME" "$BRANCH"
 # Show what will be pulled
 echo ""
 echo "📋 Latest commits in template:"
-git log --oneline HEAD.."${REMOTE_NAME}/${BRANCH}" --prefix="$SUBTREE_DIR" | head -5 || echo "   (No new commits)"
+git log --oneline HEAD.."${REMOTE_NAME}/${BRANCH}" | head -5 || echo "   (No new commits)"
 
 # Check if there are updates
 if git diff --quiet HEAD "${REMOTE_NAME}/${BRANCH}" -- "$SUBTREE_DIR"; then
@@ -67,11 +67,25 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 0
 fi
 
+# Stash symlink changes if any (they're not part of subtree)
+echo "💾 Stashing symlink changes (if any)..."
+git stash push -m "temp: stash symlink changes for template pull" -- .cursorrules .cursorignore .cursor docs setup-aliases.sh update-template.sh 2>/dev/null || true
+
+# Also stash any other uncommitted changes
+if ! git diff --quiet || ! git diff --cached --quiet; then
+    echo "💾 Stashing all uncommitted changes..."
+    git stash push -m "temp: stash all changes for template pull" 2>/dev/null || true
+fi
+
 # Pull subtree changes
 echo "🌳 Pulling subtree changes..."
 if git subtree pull --prefix="$SUBTREE_DIR" "$REMOTE_NAME" "$BRANCH" --squash -m "chore: update template from upstream"; then
     echo ""
     echo "✅ Template updated successfully!"
+    
+    # Restore symlink changes
+    echo "🔄 Restoring symlink changes..."
+    git stash pop 2>/dev/null || true
     
     # Restore project_context.md if it was overwritten
     if [ -f "${PROJECT_CONTEXT}.backup" ]; then
