@@ -117,7 +117,15 @@ cursor-update() {
   rm -rf .cursor-tmp
   echo "✅ Template updated! Project context preserved."
 }
+
+# Bidirectional Sync (Subtree)
+template-init      # Setup template as subtree
+template-pull       # Pull latest changes from template
+template-push MSG   # Push your improvements to template
+template-status     # Check sync status
 ```
+
+**📖 Full aliases:** Run `bash setup-aliases.sh` to install all aliases automatically.
 
 ---
 
@@ -165,6 +173,44 @@ git add . && git commit -m "Update: XYZ" && git push
 cd existing_project
 cursor-update  # Automatski update, zadržava project_context.md
 ```
+
+---
+
+## 🔄 Bidirectional Sync (NEW! ⭐)
+
+**Push your improvements back to template!**
+
+Omogućava bidirekcionalnu sinkronizaciju između tvog Flutter projekta i template repozitorija. Kada napraviš poboljšanja (nova dokumentacija, bolje rules, optimizacije), možeš ih automatski poslati natrag u template.
+
+### Quick Start
+
+```bash
+# 1. Setup bidirectional sync (jednom)
+cd my-flutter-app
+template-init
+
+# 2. Pull latest changes
+template-pull
+
+# 3. Push your improvements
+template-push "feat: added new documentation for X"
+
+# 4. Check status
+template-status
+```
+
+**Što omogućava:**
+- ✅ Push poboljšanja natrag u template
+- ✅ Pull najnovije promjene iz template
+- ✅ Automatska preservacija `project_context.md`
+- ✅ Git subtree pristup (čista git history)
+
+**📖 Full Guide:** [BIDIRECTIONAL_SYNC.md](BIDIRECTIONAL_SYNC.md)
+
+**Kompatibilnost:**
+- Projekti sa subtree-om mogu koristiti `cursor-update`
+- Projekti bez subtree-a (stari način) nastavljaju raditi
+- Postupni migration path
 
 ---
 
@@ -235,6 +281,7 @@ cursor-update  # Automatski update, zadržava project_context.md
 **Issues?**
 - **404 errors?** → [REPO_VISIBILITY_GUIDE.md](REPO_VISIBILITY_GUIDE.md)
 - **Update not working?** → [UPDATE_SYSTEM.md](UPDATE_SYSTEM.md)
+- **Bidirectional sync?** → [BIDIRECTIONAL_SYNC.md](BIDIRECTIONAL_SYNC.md)
 - Open issue na [GitHub](https://github.com/adiomas/flutter-cursor-template)
 - Check template version
 - Verify MCP setup (Context7)

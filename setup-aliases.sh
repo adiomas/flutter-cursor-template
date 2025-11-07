@@ -117,6 +117,126 @@ cursor-update() {
   echo "✅ Template updated! Project context preserved."
 }
 
+# Flutter Cursor Template - Bidirectional Sync (Subtree)
+# Initialize template as subtree for bidirectional sync
+template-init() {
+  local script_path=""
+  
+  # Try to find script in common locations
+  if [ -f "$HOME/Developer/flutter-cursor-template/sync-template-to-project.sh" ]; then
+    script_path="$HOME/Developer/flutter-cursor-template/sync-template-to-project.sh"
+  elif [ -f "./sync-template-to-project.sh" ]; then
+    script_path="./sync-template-to-project.sh"
+  elif [ -f "cursor-template/sync-template-to-project.sh" ]; then
+    script_path="cursor-template/sync-template-to-project.sh"
+  else
+    echo "❌ sync-template-to-project.sh not found"
+    echo ""
+    echo "Download it from template repository:"
+    echo "  curl -fsSL https://raw.githubusercontent.com/adiomas/flutter-cursor-template/main/sync-template-to-project.sh -o sync-template-to-project.sh"
+    echo "  chmod +x sync-template-to-project.sh"
+    echo "  ./sync-template-to-project.sh"
+    return 1
+  fi
+  
+  bash "$script_path"
+}
+
+# Pull latest changes from template
+template-pull() {
+  local script_path=""
+  
+  if [ -f "$HOME/Developer/flutter-cursor-template/pull-from-template.sh" ]; then
+    script_path="$HOME/Developer/flutter-cursor-template/pull-from-template.sh"
+  elif [ -f "./pull-from-template.sh" ]; then
+    script_path="./pull-from-template.sh"
+  elif [ -f "cursor-template/pull-from-template.sh" ]; then
+    script_path="cursor-template/pull-from-template.sh"
+  else
+    echo "❌ pull-from-template.sh not found"
+    echo ""
+    echo "Download it from template repository:"
+    echo "  curl -fsSL https://raw.githubusercontent.com/adiomas/flutter-cursor-template/main/pull-from-template.sh -o pull-from-template.sh"
+    echo "  chmod +x pull-from-template.sh"
+    echo "  ./pull-from-template.sh"
+    return 1
+  fi
+  
+  bash "$script_path"
+}
+
+# Push changes back to template
+template-push() {
+  local commit_msg="$1"
+  local script_path=""
+  
+  if [ -f "$HOME/Developer/flutter-cursor-template/push-to-template.sh" ]; then
+    script_path="$HOME/Developer/flutter-cursor-template/push-to-template.sh"
+  elif [ -f "./push-to-template.sh" ]; then
+    script_path="./push-to-template.sh"
+  elif [ -f "cursor-template/push-to-template.sh" ]; then
+    script_path="cursor-template/push-to-template.sh"
+  else
+    echo "❌ push-to-template.sh not found"
+    echo ""
+    echo "Download it from template repository:"
+    echo "  curl -fsSL https://raw.githubusercontent.com/adiomas/flutter-cursor-template/main/push-to-template.sh -o push-to-template.sh"
+    echo "  chmod +x push-to-template.sh"
+    echo "  ./push-to-template.sh \"your commit message\""
+    return 1
+  fi
+  
+  bash "$script_path" "$commit_msg"
+}
+
+# Check sync status
+template-status() {
+  if [ ! -d "cursor-template" ]; then
+    echo "❌ Subtree not initialized"
+    echo ""
+    echo "Run 'template-init' first to setup bidirectional sync"
+    return 1
+  fi
+  
+  if ! git remote | grep -q "^template-upstream$"; then
+    echo "❌ Template remote not found"
+    echo ""
+    echo "Run 'template-init' first to setup bidirectional sync"
+    return 1
+  fi
+  
+  echo "📊 Template Sync Status"
+  echo ""
+  echo "📁 Subtree directory: cursor-template/"
+  
+  # Check for uncommitted changes
+  if ! git diff --quiet cursor-template/ 2>/dev/null || ! git diff --cached --quiet cursor-template/ 2>/dev/null; then
+    echo "⚠️  Uncommitted changes detected:"
+    git status --short cursor-template/
+    echo ""
+    echo "💡 Commit and push with: template-push \"your message\""
+  else
+    echo "✅ No uncommitted changes"
+  fi
+  
+  # Check for upstream updates
+  git fetch template-upstream main --quiet 2>/dev/null || true
+  
+  if ! git diff --quiet HEAD template-upstream/main -- cursor-template/ 2>/dev/null; then
+    echo ""
+    echo "📥 Updates available from template:"
+    git log --oneline HEAD..template-upstream/main --prefix="cursor-template/" | head -5
+    echo ""
+    echo "💡 Pull updates with: template-pull"
+  else
+    echo "✅ Template is up to date"
+  fi
+  
+  echo ""
+  echo "🔗 Remote: template-upstream"
+  echo "🌿 Branch: main"
+}
+
 EOF
 
 echo "✅ Aliases added to ~/.zshrc"
@@ -127,4 +247,10 @@ echo "Available commands:"
 echo "  cursor-setup              - Manual setup for new project"
 echo "  cursor-ai-setup NAME DESC - AI-powered setup (copies prompt)"
 echo "  cursor-update             - Update existing project"
+echo ""
+echo "Bidirectional Sync (Subtree):"
+echo "  template-init             - Setup template as subtree (bidirectional sync)"
+echo "  template-pull              - Pull latest changes from template"
+echo "  template-push MSG         - Push your improvements to template"
+echo "  template-status           - Check sync status"
 
