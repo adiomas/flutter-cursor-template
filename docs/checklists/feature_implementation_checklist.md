@@ -38,6 +38,10 @@ Use this checklist when implementing a new feature to ensure completeness.
 
 - [ ] List page created
 - [ ] Details/Edit page created
+- [ ] **Page widgets < 300 lines** (if exceeded, extract to services/widgets)
+- [ ] **No methods > 50 lines** (if exceeded, extract to services/helpers)
+- [ ] **No business logic in pages** (delegate to services/notifiers)
+- [ ] **No code duplication** (extract repeated code to methods)
 - [ ] Loading shimmer widget created
 - [ ] Empty state widget created
 - [ ] List item widget created
